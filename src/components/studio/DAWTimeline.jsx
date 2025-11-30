@@ -4,7 +4,7 @@ import { Slider } from "@/components/ui/slider";
 import { 
   Scissors, Copy, Trash2, Move, ZoomIn, ZoomOut, Repeat, 
   Magnet, Volume2, VolumeX, Headphones, Lock, MoreVertical,
-  ChevronRight, Music2, Mic, Radio
+  ChevronRight, Music2, Mic, Radio, Disc, Waves
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -26,7 +26,6 @@ export default function DAWTimeline({
   const containerRef = useRef(null);
   const [internalZoom, setInternalZoom] = useState(100);
   const [scrollX, setScrollX] = useState(0);
-  const [scrollY, setScrollY] = useState(0);
   const [tool, setTool] = useState('select');
   const [selection, setSelection] = useState(null);
   const [loopRegion, setLoopRegion] = useState(currentLoop);
@@ -35,26 +34,33 @@ export default function DAWTimeline({
   const waveformCache = useRef({});
   const [waveformsLoaded, setWaveformsLoaded] = useState(0);
   const [snapToGrid, setSnapToGrid] = useState(true);
+  const animationFrame = useRef(null);
   const gridSize = 0.25;
 
-  const trackHeight = 80;
-  const headerWidth = 220;
-  const rulerHeight = 36;
+  const trackHeight = 72;
+  const headerWidth = 200;
+  const rulerHeight = 32;
   const pixelsPerBeat = (internalZoom * zoom) / 2;
   const timelineWidth = totalBeats * pixelsPerBeat;
 
-  // Track colors with gradients
-  const getTrackColor = (track) => {
-    const colors = {
-      melody: { bg: '#3B82F6', gradient: 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)' },
-      chords: { bg: '#8B5CF6', gradient: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)' },
-      bass: { bg: '#06B6D4', gradient: 'linear-gradient(135deg, #06B6D4 0%, #22D3EE 100%)' },
-      drums: { bg: '#EF4444', gradient: 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)' },
-      pad: { bg: '#EC4899', gradient: 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)' },
-      lead: { bg: '#F59E0B', gradient: 'linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)' },
-      audio: { bg: '#10B981', gradient: 'linear-gradient(135deg, #10B981 0%, #34D399 100%)' },
+  // Track type configurations
+  const trackConfig = {
+    melody: { color: '#4D7CFF', gradient: ['#4D7CFF', '#7BA3FF'], icon: '♪' },
+    chords: { color: '#9D5CFF', gradient: ['#9D5CFF', '#C49DFF'], icon: '♫' },
+    bass: { color: '#00F0FF', gradient: ['#00F0FF', '#5CF9FF'], icon: '◉' },
+    drums: { color: '#FF4757', gradient: ['#FF4757', '#FF7A85'], icon: '●' },
+    pad: { color: '#FF5CAA', gradient: ['#FF5CAA', '#FF8FC7'], icon: '≋' },
+    lead: { color: '#FF9500', gradient: ['#FF9500', '#FFB347'], icon: '★' },
+    audio: { color: '#00FF94', gradient: ['#00FF94', '#5CFFB8'], icon: '◎' },
+    arp: { color: '#FFDD00', gradient: ['#FFDD00', '#FFE95C'], icon: '↗' },
+  };
+
+  const getTrackConfig = (track) => {
+    return trackConfig[track.type] || { 
+      color: track.color || '#5C5C6E', 
+      gradient: [track.color || '#5C5C6E', '#8A8A9A'],
+      icon: '♪'
     };
-    return colors[track.type] || { bg: track.color || '#64748B', gradient: `linear-gradient(135deg, ${track.color || '#64748B'} 0%, ${track.color || '#94A3B8'} 100%)` };
   };
 
   // Load waveforms
@@ -75,7 +81,7 @@ export default function DAWTimeline({
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
       const rawData = audioBuffer.getChannelData(0);
-      const samples = 800;
+      const samples = 1000;
       const blockSize = Math.floor(rawData.length / samples);
       const filteredData = [];
       for (let i = 0; i < samples; i++) {
@@ -91,7 +97,12 @@ export default function DAWTimeline({
   };
 
   useEffect(() => {
-    drawTimeline();
+    const draw = () => {
+      drawTimeline();
+      animationFrame.current = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(animationFrame.current);
   }, [tracks, currentBeat, internalZoom, zoom, scrollX, selection, loopRegion, waveformsLoaded, bpm, selectedTrackId]);
 
   const drawTimeline = useCallback(() => {
@@ -109,17 +120,17 @@ export default function DAWTimeline({
     const width = rect.width;
     const height = rect.height;
 
-    // Dark gradient background
+    // Ultra-dark gradient background
     const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-    bgGrad.addColorStop(0, '#0A0C10');
-    bgGrad.addColorStop(1, '#06070A');
+    bgGrad.addColorStop(0, '#0B0B0F');
+    bgGrad.addColorStop(1, '#060608');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, width, height);
 
     // Draw ruler
     drawRuler(ctx, width);
 
-    // Draw track lanes
+    // Draw tracks
     tracks.forEach((track, idx) => {
       const y = rulerHeight + (idx * trackHeight);
       drawTrackLane(ctx, track, y, width, idx);
@@ -130,14 +141,20 @@ export default function DAWTimeline({
       const x1 = (loopRegion.start * pixelsPerBeat) - scrollX + headerWidth;
       const x2 = (loopRegion.end * pixelsPerBeat) - scrollX + headerWidth;
       
-      // Loop region background
-      ctx.fillStyle = 'rgba(0, 217, 255, 0.08)';
+      // Loop background
+      const loopGrad = ctx.createLinearGradient(x1, 0, x2, 0);
+      loopGrad.addColorStop(0, 'rgba(0, 240, 255, 0.06)');
+      loopGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.08)');
+      loopGrad.addColorStop(1, 'rgba(0, 240, 255, 0.06)');
+      ctx.fillStyle = loopGrad;
       ctx.fillRect(x1, rulerHeight, x2 - x1, tracks.length * trackHeight);
       
-      // Loop markers
-      ctx.strokeStyle = '#00D9FF';
+      // Loop markers with glow
+      ctx.shadowColor = '#00F0FF';
+      ctx.shadowBlur = 8;
+      ctx.strokeStyle = '#00F0FF';
       ctx.lineWidth = 2;
-      ctx.setLineDash([4, 4]);
+      ctx.setLineDash([6, 3]);
       ctx.beginPath();
       ctx.moveTo(x1, rulerHeight);
       ctx.lineTo(x1, rulerHeight + tracks.length * trackHeight);
@@ -145,10 +162,11 @@ export default function DAWTimeline({
       ctx.lineTo(x2, rulerHeight + tracks.length * trackHeight);
       ctx.stroke();
       ctx.setLineDash([]);
+      ctx.shadowBlur = 0;
       
-      // Loop region header
-      ctx.fillStyle = '#00D9FF';
-      ctx.fillRect(x1, 0, x2 - x1, 4);
+      // Loop header bar
+      ctx.fillStyle = '#00F0FF';
+      ctx.fillRect(x1, 0, x2 - x1, 3);
     }
 
     // Draw selection
@@ -157,57 +175,67 @@ export default function DAWTimeline({
       const x2 = (selection.end * pixelsPerBeat) - scrollX + headerWidth;
       const y1 = rulerHeight + (selection.trackIdx * trackHeight);
 
-      ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
+      ctx.fillStyle = 'rgba(255, 221, 0, 0.1)';
       ctx.fillRect(x1, y1, x2 - x1, trackHeight);
       
-      ctx.strokeStyle = '#F59E0B';
+      ctx.strokeStyle = '#FFDD00';
       ctx.lineWidth = 2;
+      ctx.shadowColor = '#FFDD00';
+      ctx.shadowBlur = 6;
       ctx.strokeRect(x1, y1, x2 - x1, trackHeight);
+      ctx.shadowBlur = 0;
     }
 
-    // Draw playhead
+    // Draw playhead with premium glow
     const playheadX = (currentBeat * pixelsPerBeat) - scrollX + headerWidth;
     if (playheadX >= headerWidth && playheadX <= width) {
-      // Playhead glow
-      const glowGrad = ctx.createLinearGradient(playheadX - 20, 0, playheadX + 20, 0);
-      glowGrad.addColorStop(0, 'rgba(0, 217, 255, 0)');
-      glowGrad.addColorStop(0.5, 'rgba(0, 217, 255, 0.15)');
-      glowGrad.addColorStop(1, 'rgba(0, 217, 255, 0)');
+      // Ambient glow
+      const glowGrad = ctx.createLinearGradient(playheadX - 30, 0, playheadX + 30, 0);
+      glowGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
+      glowGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.12)');
+      glowGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
       ctx.fillStyle = glowGrad;
-      ctx.fillRect(playheadX - 20, 0, 40, height);
+      ctx.fillRect(playheadX - 30, 0, 60, height);
       
-      // Playhead line
-      ctx.strokeStyle = '#00D9FF';
+      // Main line
+      ctx.strokeStyle = '#00F0FF';
       ctx.lineWidth = 2;
-      ctx.shadowColor = '#00D9FF';
-      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#00F0FF';
+      ctx.shadowBlur = 16;
       ctx.beginPath();
       ctx.moveTo(playheadX, 0);
       ctx.lineTo(playheadX, height);
       ctx.stroke();
       ctx.shadowBlur = 0;
       
-      // Playhead head
-      ctx.fillStyle = '#00D9FF';
+      // Playhead triangle
+      ctx.fillStyle = '#00F0FF';
+      ctx.shadowColor = '#00F0FF';
+      ctx.shadowBlur = 12;
       ctx.beginPath();
-      ctx.moveTo(playheadX - 6, 0);
-      ctx.lineTo(playheadX + 6, 0);
-      ctx.lineTo(playheadX, 10);
+      ctx.moveTo(playheadX - 7, 0);
+      ctx.lineTo(playheadX + 7, 0);
+      ctx.lineTo(playheadX, 12);
       ctx.closePath();
       ctx.fill();
+      ctx.shadowBlur = 0;
     }
   }, [tracks, currentBeat, internalZoom, zoom, scrollX, selection, loopRegion, waveformsLoaded, bpm, selectedTrackId, pixelsPerBeat]);
 
   const drawRuler = (ctx, width) => {
     // Ruler background
     const rulerGrad = ctx.createLinearGradient(0, 0, 0, rulerHeight);
-    rulerGrad.addColorStop(0, '#151B23');
-    rulerGrad.addColorStop(1, '#0D1117');
+    rulerGrad.addColorStop(0, '#18181F');
+    rulerGrad.addColorStop(1, '#111116');
     ctx.fillStyle = rulerGrad;
     ctx.fillRect(headerWidth, 0, width - headerWidth, rulerHeight);
 
-    // Border
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    // Bottom border with gradient
+    const borderGrad = ctx.createLinearGradient(headerWidth, 0, width, 0);
+    borderGrad.addColorStop(0, 'rgba(255,255,255,0.05)');
+    borderGrad.addColorStop(0.5, 'rgba(255,255,255,0.1)');
+    borderGrad.addColorStop(1, 'rgba(255,255,255,0.05)');
+    ctx.strokeStyle = borderGrad;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(headerWidth, rulerHeight);
@@ -215,39 +243,41 @@ export default function DAWTimeline({
     ctx.stroke();
 
     // Time markers
-    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.font = '500 10px "JetBrains Mono", monospace';
     
     for (let beat = 0; beat <= totalBeats; beat++) {
       const x = (beat * pixelsPerBeat) - scrollX + headerWidth;
       if (x < headerWidth || x > width) continue;
 
       const isBar = beat % 4 === 0;
-      const isHalfBar = beat % 2 === 0;
+      const isBeat = beat % 1 === 0;
       
       if (isBar) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        // Bar line
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(x, rulerHeight - 16);
+        ctx.moveTo(x, rulerHeight - 14);
         ctx.lineTo(x, rulerHeight);
         ctx.stroke();
         
+        // Bar number
         const bar = Math.floor(beat / 4) + 1;
-        ctx.fillText(bar.toString(), x + 4, rulerHeight - 20);
-      } else if (isHalfBar && pixelsPerBeat > 15) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.fillStyle = '#9898A6';
+        ctx.fillText(bar.toString(), x + 4, 12);
+      } else if (isBeat && pixelsPerBeat > 20) {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
         ctx.beginPath();
-        ctx.moveTo(x, rulerHeight - 8);
+        ctx.moveTo(x, rulerHeight - 6);
         ctx.lineTo(x, rulerHeight);
         ctx.stroke();
       }
     }
 
-    // Header background
+    // Header area
     const headerGrad = ctx.createLinearGradient(0, 0, headerWidth, 0);
-    headerGrad.addColorStop(0, '#0D1117');
-    headerGrad.addColorStop(1, '#151B23');
+    headerGrad.addColorStop(0, '#111116');
+    headerGrad.addColorStop(1, '#18181F');
     ctx.fillStyle = headerGrad;
     ctx.fillRect(0, 0, headerWidth, rulerHeight);
     
@@ -255,27 +285,29 @@ export default function DAWTimeline({
     const minutes = Math.floor(currentBeat / bpm);
     const seconds = Math.floor((currentBeat / bpm * 60) % 60);
     const ms = Math.floor(((currentBeat / bpm * 60) % 1) * 100);
-    ctx.fillStyle = '#00D9FF';
-    ctx.font = 'bold 14px "JetBrains Mono", monospace';
-    ctx.fillText(`${minutes}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`, 16, 24);
+    
+    ctx.font = 'bold 13px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#00F0FF';
+    ctx.fillText(`${minutes}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(2, '0')}`, 12, 20);
   };
 
   const drawTrackLane = (ctx, track, y, width, idx) => {
     const isSelected = track.id === selectedTrackId;
-    const colors = getTrackColor(track);
+    const config = getTrackConfig(track);
     
     // Track background
     if (isSelected) {
-      ctx.fillStyle = 'rgba(0, 217, 255, 0.05)';
-    } else if (idx % 2 === 0) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+      const selectGrad = ctx.createLinearGradient(headerWidth, y, width, y);
+      selectGrad.addColorStop(0, `${config.color}08`);
+      selectGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = selectGrad;
     } else {
-      ctx.fillStyle = 'transparent';
+      ctx.fillStyle = idx % 2 === 0 ? 'rgba(255, 255, 255, 0.015)' : 'transparent';
     }
     ctx.fillRect(headerWidth, y, width - headerWidth, trackHeight);
 
     // Track separator
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, y + trackHeight);
@@ -283,13 +315,13 @@ export default function DAWTimeline({
     ctx.stroke();
 
     // Grid lines
-    if (pixelsPerBeat > 20) {
+    if (pixelsPerBeat > 15) {
       for (let beat = 0; beat <= totalBeats; beat++) {
         const x = (beat * pixelsPerBeat) - scrollX + headerWidth;
         if (x < headerWidth || x > width) continue;
         
         const isBar = beat % 4 === 0;
-        ctx.strokeStyle = isBar ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)';
+        ctx.strokeStyle = isBar ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.02)';
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x, y + trackHeight);
@@ -299,31 +331,38 @@ export default function DAWTimeline({
 
     // Draw content
     if (track.audioUrl && track.isAudio && waveformCache.current[track.id]) {
-      drawWaveform(ctx, track, y, width, colors);
+      drawWaveform(ctx, track, y, width, config);
     } else if (track.notes && track.notes.length > 0) {
-      drawMIDIClips(ctx, track, y, width, colors);
+      drawMIDIClips(ctx, track, y, width, config);
     }
 
     // Selection indicator
     if (isSelected) {
-      ctx.fillStyle = '#00D9FF';
+      const indicatorGrad = ctx.createLinearGradient(headerWidth - 3, y, headerWidth, y + trackHeight);
+      indicatorGrad.addColorStop(0, config.color);
+      indicatorGrad.addColorStop(1, config.gradient[1]);
+      ctx.fillStyle = indicatorGrad;
       ctx.fillRect(headerWidth - 3, y, 3, trackHeight);
     }
   };
 
-  const drawWaveform = (ctx, track, y, width, colors) => {
+  const drawWaveform = (ctx, track, y, width, config) => {
     const waveform = waveformCache.current[track.id];
     if (!waveform?.data) return;
 
-    const color = colors.bg;
     const middle = y + trackHeight / 2;
     const waveHeight = trackHeight * 0.35;
     const durationBeats = (waveform.duration / 60) * bpm;
     const waveWidth = durationBeats * pixelsPerBeat;
     const samplesPerPixel = waveform.data.length / waveWidth;
 
-    // Waveform fill
-    ctx.fillStyle = color + '40';
+    // Waveform gradient
+    const waveGrad = ctx.createLinearGradient(0, y, 0, y + trackHeight);
+    waveGrad.addColorStop(0, config.color + '60');
+    waveGrad.addColorStop(0.5, config.color + '40');
+    waveGrad.addColorStop(1, config.color + '60');
+
+    ctx.fillStyle = waveGrad;
     ctx.beginPath();
     ctx.moveTo(headerWidth, middle);
     
@@ -346,39 +385,47 @@ export default function DAWTimeline({
     ctx.closePath();
     ctx.fill();
 
-    // Waveform stroke
-    ctx.strokeStyle = color;
+    // Waveform outline
+    ctx.strokeStyle = config.color;
     ctx.lineWidth = 1;
     ctx.stroke();
   };
 
-  const drawMIDIClips = (ctx, track, y, width, colors) => {
-    const color = colors.bg;
-    
+  const drawMIDIClips = (ctx, track, y, width, config) => {
     // Find note range
-    const minPitch = Math.min(...track.notes.map(n => n.pitch));
-    const maxPitch = Math.max(...track.notes.map(n => n.pitch));
+    const pitches = track.notes.map(n => n.pitch);
+    const minPitch = Math.min(...pitches);
+    const maxPitch = Math.max(...pitches);
     const pitchRange = Math.max(maxPitch - minPitch, 12);
-    const noteHeight = Math.min((trackHeight - 16) / pitchRange, 8);
+    const noteHeight = Math.min((trackHeight - 12) / pitchRange, 6);
 
     track.notes.forEach(note => {
       const x = (note.start * pixelsPerBeat) - scrollX + headerWidth;
-      const w = Math.max(note.duration * pixelsPerBeat, 2);
+      const w = Math.max(note.duration * pixelsPerBeat - 1, 3);
       const relPitch = (note.pitch - minPitch) / pitchRange;
-      const noteY = y + trackHeight - 8 - (relPitch * (trackHeight - 16));
+      const noteY = y + trackHeight - 6 - (relPitch * (trackHeight - 12));
 
       if (x + w < headerWidth || x > width) return;
 
-      // Note rectangle with gradient
-      const noteGrad = ctx.createLinearGradient(x, noteY, x, noteY + noteHeight);
-      noteGrad.addColorStop(0, color);
-      noteGrad.addColorStop(1, color + 'CC');
+      // Note gradient
+      const noteGrad = ctx.createLinearGradient(x, noteY, x + w, noteY);
+      noteGrad.addColorStop(0, config.color);
+      noteGrad.addColorStop(1, config.gradient[1]);
+      
       ctx.fillStyle = noteGrad;
-      ctx.fillRect(x, noteY, w, noteHeight);
+      ctx.shadowColor = config.color;
+      ctx.shadowBlur = 4;
+      
+      // Rounded note
+      const radius = 2;
+      ctx.beginPath();
+      ctx.roundRect(x, noteY, w, noteHeight, radius);
+      ctx.fill();
+      ctx.shadowBlur = 0;
       
       // Velocity brightness
-      const velocityAlpha = Math.round((note.velocity / 127) * 60 + 40).toString(16).padStart(2, '0');
-      ctx.fillStyle = '#FFFFFF' + velocityAlpha;
+      const brightness = note.velocity / 127;
+      ctx.fillStyle = `rgba(255, 255, 255, ${brightness * 0.4})`;
       ctx.fillRect(x, noteY, w, 2);
     });
   };
@@ -389,7 +436,6 @@ export default function DAWTimeline({
     const y = e.clientY - rect.top;
 
     if (y < rulerHeight) {
-      // Click on ruler = seek
       const beat = ((x - headerWidth + scrollX) / pixelsPerBeat);
       if (beat >= 0) onSeekTo?.(Math.max(0, beat));
       return;
@@ -436,7 +482,7 @@ export default function DAWTimeline({
       if (sorted.end - sorted.start > 0.5) {
         setLoopRegion(sorted);
         onSetLoop?.(sorted);
-        toast.success(`Loop: Bar ${Math.floor(sorted.start/4)+1} - Bar ${Math.floor(sorted.end/4)+1}`);
+        toast.success(`Loop: Bar ${Math.floor(sorted.start/4)+1} → ${Math.floor(sorted.end/4)+1}`);
       }
     }
     setIsDragging(false);
@@ -446,54 +492,34 @@ export default function DAWTimeline({
   const handleWheel = (e) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
-      setInternalZoom(prev => Math.max(20, Math.min(300, prev - e.deltaY * 0.5)));
+      setInternalZoom(prev => Math.max(30, Math.min(300, prev - e.deltaY * 0.5)));
     } else {
       setScrollX(prev => Math.max(0, Math.min(timelineWidth - 800, prev + e.deltaX)));
     }
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#06070A]">
-      {/* Professional Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-b from-[#151B23] to-[#0D1117] border-b border-white/10">
+    <div className="flex flex-col h-full" style={{ background: '#060608' }}>
+      {/* Toolbar */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-white/5" 
+        style={{ background: 'linear-gradient(180deg, #18181F 0%, #111116 100%)' }}>
         <div className="flex items-center gap-1">
           {[
-            { id: 'select', icon: Move, label: 'Select (V)' },
-            { id: 'loop', icon: Repeat, label: 'Loop (L)' },
+            { id: 'select', icon: Move, label: 'Select' },
+            { id: 'loop', icon: Repeat, label: 'Loop' },
           ].map(({ id, icon: Icon, label }) => (
             <button
               key={id}
               onClick={() => setTool(id)}
               className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
                 tool === id 
-                  ? "bg-[#00D9FF] text-[#06070A] shadow-[0_0_12px_rgba(0,217,255,0.3)]" 
-                  : "text-[#8B949E] hover:text-white hover:bg-white/5"
+                  ? "bg-[#00F0FF] text-[#060608] shadow-[0_0_16px_rgba(0,240,255,0.4)]" 
+                  : "text-[#9898A6] hover:text-white hover:bg-white/5"
               )}
-              title={label}
             >
               <Icon className="w-3.5 h-3.5" />
-              {id.charAt(0).toUpperCase() + id.slice(1)}
-            </button>
-          ))}
-
-          <div className="w-px h-5 bg-white/10 mx-2" />
-
-          {[
-            { icon: Scissors, action: 'cut', label: 'Cut' },
-            { icon: Copy, action: 'copy', label: 'Copy' },
-            { icon: Trash2, action: 'delete', label: 'Delete', danger: true },
-          ].map(({ icon: Icon, action, label, danger }) => (
-            <button
-              key={action}
-              disabled={!selection}
-              className={cn(
-                "p-1.5 rounded-md transition-all disabled:opacity-30",
-                danger ? "text-[#EF4444] hover:bg-[#EF4444]/10" : "text-[#8B949E] hover:text-white hover:bg-white/5"
-              )}
-              title={label}
-            >
-              <Icon className="w-4 h-4" />
+              {label}
             </button>
           ))}
 
@@ -502,10 +528,10 @@ export default function DAWTimeline({
           <button
             onClick={() => setSnapToGrid(!snapToGrid)}
             className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
               snapToGrid 
-                ? "bg-[#7C3AED]/20 text-[#A78BFA] border border-[#7C3AED]/30" 
-                : "text-[#8B949E] hover:text-white hover:bg-white/5"
+                ? "bg-[#9D5CFF]/20 text-[#C49DFF] border border-[#9D5CFF]/30" 
+                : "text-[#9898A6] hover:text-white hover:bg-white/5"
             )}
           >
             <Magnet className="w-3.5 h-3.5" />
@@ -513,28 +539,24 @@ export default function DAWTimeline({
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-black/30 border border-white/5">
-            <button
-              onClick={() => setInternalZoom(Math.max(20, internalZoom - 20))}
-              className="p-1 rounded hover:bg-white/10 text-[#8B949E] hover:text-white transition-colors"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-            <span className="text-[10px] font-mono text-[#8B949E] w-10 text-center">
-              {internalZoom}%
-            </span>
-            <button
-              onClick={() => setInternalZoom(Math.min(300, internalZoom + 20))}
-              className="p-1 rounded hover:bg-white/10 text-[#8B949E] hover:text-white transition-colors"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-          </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/30 border border-white/5">
+          <button
+            onClick={() => setInternalZoom(Math.max(30, internalZoom - 20))}
+            className="p-1 rounded hover:bg-white/10 text-[#5C5C6E] hover:text-white transition-colors"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <span className="text-[10px] font-mono text-[#5C5C6E] w-10 text-center">{internalZoom}%</span>
+          <button
+            onClick={() => setInternalZoom(Math.min(300, internalZoom + 20))}
+            className="p-1 rounded hover:bg-white/10 text-[#5C5C6E] hover:text-white transition-colors"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
-      {/* Timeline Canvas */}
+      {/* Canvas */}
       <div className="flex-1 relative overflow-hidden" ref={containerRef}>
         <canvas
           ref={canvasRef}
@@ -547,74 +569,70 @@ export default function DAWTimeline({
           onWheel={handleWheel}
         />
 
-        {/* Track Headers Overlay */}
+        {/* Track Headers */}
         <div 
-          className="absolute left-0 top-0 w-[220px] h-full pointer-events-none"
-          style={{ background: 'linear-gradient(90deg, #0D1117 85%, transparent 100%)' }}
+          className="absolute left-0 top-0 w-[200px] h-full pointer-events-none"
+          style={{ background: 'linear-gradient(90deg, #111116 92%, transparent 100%)' }}
         >
-          {/* Header spacer */}
           <div 
-            className="flex items-center px-4 border-b border-white/10"
-            style={{ height: `${rulerHeight}px`, background: 'linear-gradient(180deg, #151B23 0%, #0D1117 100%)' }}
+            className="flex items-center px-3 border-b border-white/5"
+            style={{ height: `${rulerHeight}px`, background: 'linear-gradient(180deg, #18181F 0%, #111116 100%)' }}
           >
-            <span className="text-[10px] font-semibold text-[#6E7681] uppercase tracking-wider">Tracks</span>
+            <span className="text-[9px] font-bold text-[#5C5C6E] uppercase tracking-widest">Tracks</span>
           </div>
           
-          {/* Track headers */}
           {tracks.map((track, idx) => {
             const isSelected = track.id === selectedTrackId;
-            const colors = getTrackColor(track);
+            const config = getTrackConfig(track);
             
             return (
               <div
                 key={track.id}
                 className={cn(
-                  "flex items-center gap-3 px-3 border-b border-white/5 pointer-events-auto cursor-pointer transition-all",
-                  isSelected && "bg-[#00D9FF]/5"
+                  "flex items-center gap-2.5 px-3 border-b border-white/[0.03] pointer-events-auto cursor-pointer transition-all",
+                  isSelected && "bg-gradient-to-r from-[#00F0FF]/5 to-transparent"
                 )}
                 style={{ height: `${trackHeight}px` }}
                 onClick={() => onSelectTrack?.(track)}
               >
-                {/* Track color indicator */}
+                {/* Color bar */}
                 <div 
                   className="w-1 h-10 rounded-full"
-                  style={{ background: colors.gradient }}
+                  style={{ background: `linear-gradient(180deg, ${config.gradient[0]}, ${config.gradient[1]})` }}
                 />
                 
                 {/* Track icon */}
                 <div 
-                  className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ background: colors.bg + '20' }}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
+                  style={{ 
+                    background: `${config.color}15`,
+                    color: config.color,
+                    boxShadow: isSelected ? `0 0 12px ${config.color}30` : 'none'
+                  }}
                 >
-                  {track.isAudio ? (
-                    <Mic className="w-4 h-4" style={{ color: colors.bg }} />
-                  ) : track.type === 'drums' ? (
-                    <Radio className="w-4 h-4" style={{ color: colors.bg }} />
-                  ) : (
-                    <Music2 className="w-4 h-4" style={{ color: colors.bg }} />
-                  )}
+                  {track.isAudio ? <Waves className="w-3.5 h-3.5" /> : <Music2 className="w-3.5 h-3.5" />}
                 </div>
                 
-                {/* Track info */}
+                {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-white truncate">{track.name}</span>
-                    {track.muted && <VolumeX className="w-3 h-3 text-[#EF4444]" />}
-                    {track.solo && <Headphones className="w-3 h-3 text-[#F59E0B]" />}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-semibold text-white truncate">{track.name}</span>
+                    {track.muted && <VolumeX className="w-3 h-3 text-[#FF4757]" />}
+                    {track.solo && <Headphones className="w-3 h-3 text-[#FF9500]" />}
                   </div>
-                  <div className="text-[10px] text-[#6E7681]">
+                  <div className="text-[9px] text-[#5C5C6E]">
                     {track.isAudio ? 'Audio' : `${track.notes?.length || 0} notes`}
                   </div>
                 </div>
                 
-                {/* Track controls */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                {/* M/S buttons */}
+                <div className="flex gap-1">
                   <button 
                     className={cn(
-                      "w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center transition-all",
+                      "w-5 h-5 rounded text-[9px] font-bold flex items-center justify-center transition-all",
                       track.muted 
-                        ? "bg-[#EF4444] text-white" 
-                        : "bg-white/5 text-[#6E7681] hover:bg-white/10"
+                        ? "bg-[#FF4757] text-white shadow-[0_0_8px_rgba(255,71,87,0.4)]" 
+                        : "bg-white/5 text-[#5C5C6E] hover:bg-white/10"
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -625,10 +643,10 @@ export default function DAWTimeline({
                   </button>
                   <button 
                     className={cn(
-                      "w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center transition-all",
+                      "w-5 h-5 rounded text-[9px] font-bold flex items-center justify-center transition-all",
                       track.solo 
-                        ? "bg-[#F59E0B] text-black" 
-                        : "bg-white/5 text-[#6E7681] hover:bg-white/10"
+                        ? "bg-[#FF9500] text-black shadow-[0_0_8px_rgba(255,149,0,0.4)]" 
+                        : "bg-white/5 text-[#5C5C6E] hover:bg-white/10"
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -644,17 +662,15 @@ export default function DAWTimeline({
         </div>
       </div>
 
-      {/* Horizontal Scroll */}
-      <div className="h-3 px-[220px] bg-[#0A0C10] border-t border-white/5">
-        <div className="h-full relative">
-          <Slider
-            value={[scrollX]}
-            onValueChange={(val) => setScrollX(val[0])}
-            max={Math.max(0, timelineWidth - 800)}
-            step={10}
-            className="h-full"
-          />
-        </div>
+      {/* Scroll */}
+      <div className="h-2.5 px-[200px] bg-[#060608] border-t border-white/5">
+        <Slider
+          value={[scrollX]}
+          onValueChange={(val) => setScrollX(val[0])}
+          max={Math.max(0, timelineWidth - 800)}
+          step={10}
+          className="h-full"
+        />
       </div>
     </div>
   );
