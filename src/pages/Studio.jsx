@@ -1368,14 +1368,14 @@ function StudioContent() {
       "flex h-screen text-white overflow-hidden",
       fullscreen && "fixed inset-0 z-50"
     )}
-    style={{ background: 'linear-gradient(180deg, #0A0C10 0%, #06070A 100%)' }}
+    style={{ background: '#030305' }}
     >
-      {/* Professional Sidebar */}
+      {/* Ultimate Sidebar */}
       <aside className={cn(
-        "border-r border-white/5 flex flex-col transition-all duration-300",
-        sidebarCollapsed ? "w-[60px]" : "w-[340px]"
+        "border-r border-white/[0.06] flex flex-col transition-all duration-300",
+        sidebarCollapsed ? "w-[56px]" : "w-[320px]"
       )}
-      style={{ background: 'linear-gradient(180deg, #0D1117 0%, #06070A 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #111116 0%, #060608 100%)' }}
       >
         {/* Header */}
         <div className="p-4 border-b border-white/5">
@@ -1929,38 +1929,41 @@ function StudioContent() {
 
       {/* Main Workspace */}
       <main className="flex-1 flex flex-col overflow-hidden bg-[#0A0B0E]">
-        {/* Professional Transport Bar */}
-        <div className="sticky top-0 z-10 transport-bar">
+        {/* Ultimate Transport Bar */}
+        <div className="sticky top-0 z-10 border-b border-white/5" style={{ background: 'linear-gradient(180deg, #18181F 0%, #111116 100%)' }}>
           <div className="px-6 py-3">
             <div className="flex items-center justify-between">
               {/* Left: Time Display */}
-              <div className="flex items-center gap-6 flex-1">
+              <div className="flex items-center gap-5 flex-1">
                 {/* Time Counter */}
-                <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-black/40 border border-white/5">
-                  <div className="text-2xl font-black font-mono text-[#00D9FF] tracking-tight">
+                <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/5" style={{ background: 'rgba(0,0,0,0.4)' }}>
+                  <div className="text-2xl font-black font-mono tracking-tight" style={{ color: '#00F0FF', textShadow: '0 0 20px rgba(0,240,255,0.4)' }}>
                     {Math.floor(currentBeat / bpm)}:{String(Math.floor((currentBeat / bpm * 60) % 60)).padStart(2, '0')}.{String(Math.floor(((currentBeat / bpm * 60) % 1) * 100)).padStart(2, '0')}
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="text-center">
                     <div className="text-lg font-bold font-mono text-white">{Math.floor(currentBeat / 4) + 1}.{Math.floor(currentBeat % 4) + 1}</div>
-                    <div className="text-[9px] text-[#6E7681] uppercase">Bar.Beat</div>
+                    <div className="text-[8px] text-[#5C5C6E] uppercase tracking-widest">Bar.Beat</div>
                   </div>
                 </div>
 
                 {/* Structure Pills */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   {structure.map((section, idx) => (
                     <button
                       key={idx}
-                      className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-[#1C232D] border border-white/5 hover:border-[#00D9FF]/30 hover:bg-[#00D9FF]/5 transition-all"
+                      className="px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all hover:scale-105"
+                      style={{ background: '#1F1F28', border: '1px solid rgba(255,255,255,0.05)' }}
                     >
                       {section.name}
-                      <span className="ml-1.5 text-[#6E7681]">{section.bars}</span>
+                      <span className="ml-1.5 text-[#5C5C6E]">{section.bars}</span>
                     </button>
                   ))}
                   {loop && (
-                    <div className="px-2.5 py-1 rounded-lg text-[10px] font-mono bg-[#00D9FF]/10 text-[#00D9FF] border border-[#00D9FF]/30 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00D9FF] animate-pulse" />
+                    <div className="px-2.5 py-1 rounded-lg text-[9px] font-mono flex items-center gap-1.5"
+                      style={{ background: 'rgba(0,240,255,0.1)', color: '#00F0FF', border: '1px solid rgba(0,240,255,0.3)' }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-pulse shadow-[0_0_6px_#00F0FF]" />
                       Loop {Math.floor(loop.start)}-{Math.floor(loop.end)}
                     </div>
                   )}
@@ -1971,7 +1974,7 @@ function StudioContent() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleStop}
-                  className="w-10 h-10 rounded-xl bg-[#1C232D] border border-white/5 flex items-center justify-center text-[#8B949E] hover:text-white hover:bg-[#252D3A] transition-all disabled:opacity-30"
+                  className="transport-btn"
                   disabled={!isPlaying && currentBeat === 0}
                 >
                   <Square className="w-4 h-4" />
@@ -1981,12 +1984,19 @@ function StudioContent() {
                   onClick={isPlaying ? handlePause : handlePlay}
                   data-action="play"
                   className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-lg",
+                    "w-14 h-14 rounded-2xl flex items-center justify-center transition-all",
                     isPlaying
-                      ? "bg-gradient-to-br from-[#EF4444] to-[#DC2626] hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] text-white"
-                      : "bg-gradient-to-br from-[#10B981] to-[#059669] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] text-white",
-                    "hover:scale-105 active:scale-95"
+                      ? "text-white hover:scale-105"
+                      : "text-[#030305] hover:scale-105"
                   )}
+                  style={{ 
+                    background: isPlaying 
+                      ? 'linear-gradient(135deg, #FF4757 0%, #FF6B7A 100%)' 
+                      : 'linear-gradient(135deg, #00FF94 0%, #00F0FF 100%)',
+                    boxShadow: isPlaying 
+                      ? '0 0 30px rgba(255,71,87,0.5)' 
+                      : '0 0 30px rgba(0,255,148,0.5)'
+                  }}
                   disabled={tracks.length === 0}
                 >
                   {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
@@ -1994,7 +2004,7 @@ function StudioContent() {
 
                 <button
                   onClick={handleExport}
-                  className="w-10 h-10 rounded-xl bg-[#1C232D] border border-white/5 flex items-center justify-center text-[#8B949E] hover:text-white hover:bg-[#252D3A] transition-all disabled:opacity-30"
+                  className="transport-btn"
                   disabled={tracks.length === 0}
                 >
                   <Download className="w-4 h-4" />
@@ -2004,54 +2014,54 @@ function StudioContent() {
               {/* Right: BPM & Info */}
               <div className="flex items-center gap-4 flex-1 justify-end">
                 {/* BPM Display */}
-                <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-black/40 border border-white/5">
+                <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/5" style={{ background: 'rgba(0,0,0,0.4)' }}>
                   <div className="text-center">
-                    <div className="text-xl font-black font-mono text-[#F59E0B]">{bpm}</div>
-                    <div className="text-[9px] text-[#6E7681] uppercase">BPM</div>
+                    <div className="text-xl font-black font-mono" style={{ color: '#FF9500', textShadow: '0 0 16px rgba(255,149,0,0.4)' }}>{bpm}</div>
+                    <div className="text-[8px] text-[#5C5C6E] uppercase tracking-widest">BPM</div>
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="text-center">
                     <div className="text-sm font-bold text-white">{timeSignature}</div>
-                    <div className="text-[9px] text-[#6E7681] uppercase">Time</div>
+                    <div className="text-[8px] text-[#5C5C6E] uppercase tracking-widest">Time</div>
                   </div>
                 </div>
 
                 {/* Master Volume */}
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-white/5">
-                  <Volume2 className="w-4 h-4 text-[#8B949E]" />
-                  <div className="w-20 h-2 bg-[#0D1117] rounded-full overflow-hidden">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/5" style={{ background: 'rgba(0,0,0,0.4)' }}>
+                  <Volume2 className="w-4 h-4 text-[#5C5C6E]" />
+                  <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: '#060608' }}>
                     <div 
                       className="h-full rounded-full transition-all"
                       style={{ 
                         width: '80%',
-                        background: 'linear-gradient(90deg, #10B981 0%, #00D9FF 50%, #7C3AED 100%)'
+                        background: 'linear-gradient(90deg, #00FF94 0%, #00F0FF 50%, #9D5CFF 100%)',
+                        boxShadow: '0 0 8px rgba(0,240,255,0.4)'
                       }} 
                     />
                   </div>
-                  <span className="text-[10px] font-mono text-[#8B949E]">-3dB</span>
+                  <span className="text-[9px] font-mono text-[#9898A6]">-3dB</span>
                 </div>
               </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="relative h-1.5 bg-[#0D1117] rounded-full overflow-hidden mt-3">
-              {/* Loop region */}
+            <div className="relative h-1.5 rounded-full overflow-hidden mt-3" style={{ background: '#060608' }}>
               {loop && (
                 <div
-                  className="absolute h-full bg-[#00D9FF]/15"
+                  className="absolute h-full"
                   style={{
                     left: `${(loop.start / totalBeats) * 100}%`,
-                    width: `${((loop.end - loop.start) / totalBeats) * 100}%`
+                    width: `${((loop.end - loop.start) / totalBeats) * 100}%`,
+                    background: 'rgba(0,240,255,0.12)'
                   }}
                 />
               )}
-              {/* Progress */}
               <div
                 className="absolute h-full transition-all duration-75"
                 style={{ 
                   width: `${(currentBeat / totalBeats) * 100}%`,
-                  background: 'linear-gradient(90deg, #10B981 0%, #00D9FF 100%)',
-                  boxShadow: '0 0 12px rgba(0, 217, 255, 0.4)'
+                  background: 'linear-gradient(90deg, #00FF94 0%, #00F0FF 100%)',
+                  boxShadow: '0 0 16px rgba(0,240,255,0.5)'
                 }}
               />
             </div>
