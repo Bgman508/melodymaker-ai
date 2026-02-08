@@ -27,7 +27,7 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
     const pixelsPerBeat = contentWidth / totalBeats;
 
     // Background
-    ctx.fillStyle = '#0A0C10';
+    ctx.fillStyle = '#060608';
     ctx.fillRect(0, 0, width, height);
 
     // Grid
@@ -53,24 +53,31 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
       // Bar gradient
       const gradient = ctx.createLinearGradient(x, height, x, height - barHeight);
       if (isSelected) {
-        gradient.addColorStop(0, '#F59E0B');
-        gradient.addColorStop(1, '#FBBF24');
+        gradient.addColorStop(0, '#FF9500');
+        gradient.addColorStop(1, '#FFDD00');
       } else {
-        gradient.addColorStop(0, '#10B981');
-        gradient.addColorStop(1, '#34D399');
+        gradient.addColorStop(0, '#00FF94');
+        gradient.addColorStop(1, '#00F0FF');
       }
 
       ctx.fillStyle = gradient;
       ctx.fillRect(x, height - barHeight - 4, w, barHeight);
+      
+      // Glow
+      if (isSelected) {
+        ctx.shadowColor = '#FFDD00';
+        ctx.shadowBlur = 8;
+      }
 
       // Top cap
-      ctx.fillStyle = isSelected ? '#FBBF24' : '#34D399';
+      ctx.fillStyle = isSelected ? '#FFDD00' : '#00F0FF';
       ctx.fillRect(x, height - barHeight - 4, w, 3);
+      ctx.shadowBlur = 0;
     });
 
     // Label
-    ctx.fillStyle = '#6E7681';
-    ctx.font = '9px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#5C5C6E';
+    ctx.font = 'bold 9px "JetBrains Mono", monospace';
     ctx.fillText('VEL', 8, 16);
   };
 
@@ -111,7 +118,7 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
   };
 
   return (
-    <div className="h-16 bg-[#0A0C10]">
+    <div className="h-16" style={{ background: '#060608' }}>
       <canvas
         ref={canvasRef}
         className="w-full h-full cursor-ns-resize"

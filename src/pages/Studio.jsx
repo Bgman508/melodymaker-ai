@@ -1431,17 +1431,17 @@ function StudioContent() {
           <>
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-              <TabsList className="flex-shrink-0 grid grid-cols-4 w-full rounded-none border-b border-white/5 bg-[#0A0C10] h-11 p-0 gap-0">
-                <TabsTrigger value="compose" className="rounded-none h-full data-[state=active]:bg-[#10B981]/10 data-[state=active]:border-b-2 data-[state=active]:border-[#10B981] data-[state=active]:text-[#10B981] text-[#6E7681] hover:text-white transition-all">
+              <TabsList className="flex-shrink-0 grid grid-cols-4 w-full rounded-none border-b border-white/5 h-11 p-0 gap-0" style={{ background: '#0B0B0F' }}>
+                <TabsTrigger value="compose" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(0,255,148,0.1)', '--active-border': '#00FF94', '--active-text': '#00FF94' }}>
                   <Wand2 className="w-4 h-4" />
                 </TabsTrigger>
-                <TabsTrigger value="edit" className="rounded-none h-full data-[state=active]:bg-[#8B5CF6]/10 data-[state=active]:border-b-2 data-[state=active]:border-[#8B5CF6] data-[state=active]:text-[#8B5CF6] text-[#6E7681] hover:text-white transition-all">
+                <TabsTrigger value="edit" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(157,92,255,0.1)', '--active-border': '#9D5CFF', '--active-text': '#9D5CFF' }}>
                   <Sliders className="w-4 h-4" />
                 </TabsTrigger>
-                <TabsTrigger value="mix" className="rounded-none h-full data-[state=active]:bg-[#00D9FF]/10 data-[state=active]:border-b-2 data-[state=active]:border-[#00D9FF] data-[state=active]:text-[#00D9FF] text-[#6E7681] hover:text-white transition-all">
+                <TabsTrigger value="mix" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(0,240,255,0.1)', '--active-border': '#00F0FF', '--active-text': '#00F0FF' }}>
                   <Layers className="w-4 h-4" />
                 </TabsTrigger>
-                <TabsTrigger value="project" className="rounded-none h-full data-[state=active]:bg-[#EF4444]/10 data-[state=active]:border-b-2 data-[state=active]:border-[#EF4444] data-[state=active]:text-[#EF4444] text-[#6E7681] hover:text-white transition-all">
+                <TabsTrigger value="project" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(255,71,87,0.1)', '--active-border': '#FF4757', '--active-text': '#FF4757' }}>
                   <FileText className="w-4 h-4" />
                 </TabsTrigger>
               </TabsList>
@@ -1928,7 +1928,7 @@ function StudioContent() {
       </aside>
 
       {/* Main Workspace */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-[#0A0B0E]">
+      <main className="flex-1 flex flex-col overflow-hidden" style={{ background: '#060608' }}>
         {/* Ultimate Transport Bar */}
         <div className="sticky top-0 z-10 border-b border-white/5" style={{ background: 'linear-gradient(180deg, #18181F 0%, #111116 100%)' }}>
           <div className="px-6 py-3">
@@ -2072,7 +2072,7 @@ function StudioContent() {
         <div className="flex-1 flex flex-col overflow-hidden relative">
           {/* Zoom Controls (floating) */}
           {tracks.length > 0 && (
-            <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-[#151B23]/95 backdrop-blur-xl border border-white/10 rounded-xl p-2 shadow-xl">
+            <div className="absolute top-4 right-4 z-20 flex items-center gap-2 backdrop-blur-xl border border-white/10 rounded-xl p-2 shadow-xl" style={{ background: 'rgba(17, 17, 22, 0.95)' }}>
               <button
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-[#8B949E] hover:text-white hover:bg-white/5 transition-all"
                 onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
@@ -2102,7 +2102,7 @@ function StudioContent() {
 
           {tracks.length > 0 ? (
             <Tabs value="timeline" className="h-full flex flex-col min-h-0">
-              <TabsList className="flex-shrink-0 mx-4 mt-3 bg-[#0A0C10] border border-white/5 rounded-xl p-1 shadow-lg">
+              <TabsList className="flex-shrink-0 mx-4 mt-3 border border-white/5 rounded-xl p-1 shadow-lg" style={{ background: '#0B0B0F' }}>
                 <TabsTrigger value="timeline" className="gap-2 rounded-lg data-[state=active]:bg-[#1C232D] data-[state=active]:text-white text-[#6E7681] text-xs px-4 py-2 transition-all">
                   <Layers className="w-3.5 h-3.5" />
                   Timeline
@@ -2134,8 +2134,8 @@ function StudioContent() {
 
                 {/* Minimap */}
                 {showMinimap && (
-                  <div className="absolute bottom-4 left-[240px] right-4 h-14 bg-[#151B23]/95 backdrop-blur-xl border border-white/5 rounded-xl p-2 shadow-xl">
-                    <div className="relative h-full rounded-lg overflow-hidden bg-[#0A0C10]">
+                  <div className="absolute bottom-4 left-[240px] right-4 h-14 backdrop-blur-xl border border-white/5 rounded-xl p-2 shadow-xl" style={{ background: 'rgba(17, 17, 22, 0.95)' }}>
+                    <div className="relative h-full rounded-lg overflow-hidden" style={{ background: '#060608' }}>
                       {tracks.map((track, idx) => {
                         const color = track.color || '#64748B';
                         return (
@@ -2152,12 +2152,13 @@ function StudioContent() {
                         );
                       })}
                       <div
-                        className="absolute top-0 bottom-0 w-0.5 bg-[#00D9FF] shadow-[0_0_8px_#00D9FF]"
-                        style={{ left: `${(currentBeat / totalBeats) * 100}%` }}
+                        className="absolute top-0 bottom-0 w-0.5 shadow-[0_0_8px_#00F0FF]"
+                        style={{ left: `${(currentBeat / totalBeats) * 100}%`, background: '#00F0FF' }}
                       />
                       {loop && (
                         <div
-                          className="absolute top-0 bottom-0 bg-[#00D9FF]/10 border-x border-[#00D9FF]/30"
+                          className="absolute top-0 bottom-0 border-x"
+                          style={{ background: 'rgba(0,240,255,0.1)', borderColor: 'rgba(0,240,255,0.3)' }}
                           style={{
                             left: `${(loop.start / totalBeats) * 100}%`,
                             width: `${((loop.end - loop.start) / totalBeats) * 100}%`
@@ -2170,8 +2171,8 @@ function StudioContent() {
               </TabsContent>
 
               <TabsContent value="piano" className="flex-1 m-0 p-4 overflow-hidden">
-                <div className="rounded-xl border border-white/5 bg-[#0D1117] overflow-hidden shadow-xl h-full flex flex-col">
-                  <div className="px-4 py-3 bg-gradient-to-r from-[#151B23] to-[#0D1117] border-b border-white/5 flex-shrink-0 flex items-center justify-between">
+                <div className="rounded-xl border border-white/5 overflow-hidden shadow-xl h-full flex flex-col" style={{ background: '#0B0B0F' }}>
+                  <div className="px-4 py-3 border-b border-white/5 flex-shrink-0 flex items-center justify-between" style={{ background: 'linear-gradient(90deg, #111116 0%, #0B0B0F 100%)' }}>
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E] flex items-center gap-2">
                       {selectedTrack?.isAudio ? <Headphones className="w-4 h-4" /> : <Music2 className="w-4 h-4" />}
                       {selectedTrack?.isAudio ? 'Waveform Editor' : 'Piano Roll'}
@@ -2228,7 +2229,7 @@ function StudioContent() {
             </Tabs>
           ) : (
             /* Professional Empty State */
-            <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#0A0C10] to-[#06070A]">
+            <div className="flex items-center justify-center h-full" style={{ background: 'linear-gradient(180deg, #0B0B0F 0%, #060608 100%)' }}>
               <div className="text-center space-y-10 max-w-3xl px-8">
                 {/* Hero Icon */}
                 <div className="relative">
@@ -2267,7 +2268,10 @@ function StudioContent() {
                         setActiveTab('compose');
                         toast.success(`Template: ${style.label}`);
                       }}
-                      className="group p-4 rounded-xl border border-white/5 hover:border-white/10 bg-[#151B23] hover:bg-[#1C232D] transition-all text-left"
+                      className="group p-4 rounded-xl border border-white/5 hover:border-white/10 transition-all text-left"
+                      style={{ background: '#111116' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#18181F'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = '#111116'}
                     >
                       <div className="flex items-center gap-3 mb-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: style.color, boxShadow: `0 0 12px ${style.color}50` }} />
@@ -2281,22 +2285,22 @@ function StudioContent() {
                 {/* Stats */}
                 <div className="flex justify-center gap-12 pt-4">
                   <div className="text-center">
-                    <div className="text-2xl font-black text-[#10B981]">∞</div>
-                    <div className="text-[10px] text-[#6E7681] uppercase tracking-wider">Variations</div>
+                    <div className="text-2xl font-black text-[#00FF94]">∞</div>
+                    <div className="text-[10px] text-[#5C5C6E] uppercase tracking-wider">Variations</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-black text-[#00D9FF]">30</div>
-                    <div className="text-[10px] text-[#6E7681] uppercase tracking-wider">Max Tracks</div>
+                    <div className="text-2xl font-black text-[#00F0FF]">30</div>
+                    <div className="text-[10px] text-[#5C5C6E] uppercase tracking-wider">Max Tracks</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-black text-[#8B5CF6]">WAV</div>
-                    <div className="text-[10px] text-[#6E7681] uppercase tracking-wider">Export</div>
+                    <div className="text-2xl font-black text-[#9D5CFF]">WAV</div>
+                    <div className="text-[10px] text-[#5C5C6E] uppercase tracking-wider">Export</div>
                   </div>
                 </div>
 
                 {/* Keyboard hint */}
-                <p className="text-[11px] text-[#484F58]">
-                  Press <kbd className="px-1.5 py-0.5 rounded bg-[#1C232D] text-[#8B949E] font-mono text-[10px]">⌘K</kbd> for command palette
+                <p className="text-[11px] text-[#5C5C6E]">
+                  Press <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: '#18181F', color: '#9898A6' }}>⌘K</kbd> for command palette
                 </p>
               </div>
             </div>
