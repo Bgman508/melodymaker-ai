@@ -1370,90 +1370,68 @@ function StudioContent() {
       "flex h-screen text-white overflow-hidden",
       fullscreen && "fixed inset-0 z-50"
     )}
-    style={{ background: '#0A0A0A' }}
+    style={{ background: 'var(--bg)' }}
     >
-      {/* Minimal Sidebar */}
+      {/* Sidebar */}
       <aside className={cn(
-        "border-r flex flex-col transition-all duration-200",
-        sidebarCollapsed ? "w-[56px]" : "w-[320px]"
+        "border-r flex flex-col",
+        sidebarCollapsed ? "w-[64px]" : "w-[280px]"
       )}
       style={{ 
-        background: '#121212',
-        borderColor: 'rgba(255,255,255,0.06)'
+        background: 'var(--bg)',
+        borderColor: 'var(--border)'
       }}
       >
         {/* Header */}
-        <div className="p-4 border-b border-white/5">
+        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           {!sidebarCollapsed && (
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
-                  style={{ background: 'linear-gradient(135deg, #00D9FF 0%, #7C3AED 100%)' }}
-                >
-                  <Music className="w-5 h-5 text-white" />
-                  {isPlaying && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#EF4444] rounded-full animate-pulse shadow-[0_0_8px_#EF4444]" />
-                  )}
-                </div>
-                <div>
-                  <h1 className="text-sm font-bold tracking-tight text-white">
-                    MelodyMaker
-                  </h1>
-                  <p className="text-[10px] text-[#6E7681] truncate max-w-[180px]">{projectName}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
+            <>
+              <div className="flex items-center justify-between mb-1">
+                <h1 className="text-lg font-semibold text-white">
+                  {projectName}
+                </h1>
                 <button
-                  onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-[#6E7681] hover:text-white hover:bg-white/5 transition-all"
-                  title="Keyboard Shortcuts"
+                  onClick={() => setSidebarCollapsed(true)}
+                  className="btn-icon"
                 >
-                  <kbd className="text-[9px] font-mono">?</kbd>
+                  <ChevronDown className="w-4 h-4 -rotate-90" />
                 </button>
-                <button
-                  onClick={() => setFullscreen(!fullscreen)}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-[#6E7681] hover:text-white hover:bg-white/5 transition-all"
-                  title="Fullscreen"
-                >
-                  {fullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                </button>
-                <UndoRedoControls />
               </div>
-            </div>
+              <p className="text-sm text-white/40">AI Music Studio</p>
+            </>
           )}
-
-          {!sidebarCollapsed && <ProgressStreak />}
-
-          <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="absolute top-4 -right-3 w-6 h-6 rounded-full bg-[#1C232D] border border-white/10 flex items-center justify-center hover:bg-[#252D3A] transition-colors z-10 shadow-lg"
-          >
-            <ChevronDown className={cn("w-3 h-3 text-[#8B949E] transition-transform", sidebarCollapsed ? "rotate-90" : "-rotate-90")} />
-          </button>
+          {sidebarCollapsed && (
+            <button
+              onClick={() => setSidebarCollapsed(false)}
+              className="btn-icon mx-auto"
+            >
+              <ChevronDown className="w-4 h-4 rotate-90" />
+            </button>
+          )}
         </div>
 
         {!sidebarCollapsed && (
           <>
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-              <TabsList className="flex-shrink-0 grid grid-cols-4 w-full rounded-none border-b border-white/5 h-11 p-0 gap-0" style={{ background: '#0B0B0F' }}>
-                <TabsTrigger value="compose" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(0,255,148,0.1)', '--active-border': '#00FF94', '--active-text': '#00FF94' }}>
-                  <Wand2 className="w-4 h-4" />
+              <TabsList className="flex-shrink-0 flex w-full border-b h-12 p-0 gap-0 rounded-none" style={{ background: 'transparent', borderColor: 'var(--border)' }}>
+                <TabsTrigger value="compose" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#7C3AED] text-sm font-medium text-white/40 data-[state=active]:text-white hover:text-white/70 transition-all">
+                  Create
                 </TabsTrigger>
-                <TabsTrigger value="edit" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(157,92,255,0.1)', '--active-border': '#9D5CFF', '--active-text': '#9D5CFF' }}>
-                  <Sliders className="w-4 h-4" />
+                <TabsTrigger value="edit" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#7C3AED] text-sm font-medium text-white/40 data-[state=active]:text-white hover:text-white/70 transition-all">
+                  Edit
                 </TabsTrigger>
-                <TabsTrigger value="mix" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(0,240,255,0.1)', '--active-border': '#00F0FF', '--active-text': '#00F0FF' }}>
-                  <Layers className="w-4 h-4" />
+                <TabsTrigger value="mix" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#7C3AED] text-sm font-medium text-white/40 data-[state=active]:text-white hover:text-white/70 transition-all">
+                  Mix
                 </TabsTrigger>
-                <TabsTrigger value="project" className="rounded-none h-full data-[state=active]:border-b-2 text-[#5C5C6E] hover:text-white transition-all" style={{ '--active-bg': 'rgba(255,71,87,0.1)', '--active-border': '#FF4757', '--active-text': '#FF4757' }}>
-                  <FileText className="w-4 h-4" />
+                <TabsTrigger value="project" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#7C3AED] text-sm font-medium text-white/40 data-[state=active]:text-white hover:text-white/70 transition-all">
+                  Project
                 </TabsTrigger>
               </TabsList>
 
               <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
                 {/* COMPOSE TAB */}
-                <TabsContent value="compose" className="p-5 space-y-5 m-0 h-auto pb-20">
+                <TabsContent value="compose" className="p-6 space-y-6 m-0 h-auto pb-20">
                   {/* AI Assistant - NEW FEATURE */}
                   <AIAssistant
                     currentPrompt={prompt}
@@ -1473,36 +1451,39 @@ function StudioContent() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-semibold mb-2 block flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-[#16DB93]" />
-                        AI Music Prompt
+                      <label className="text-sm font-medium mb-3 block text-white/70">
+                        Describe your song
                       </label>
                       <textarea
                         data-prompt
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="trap soul, 140 bpm, F# minor, melodic hook..."
-                        className="w-full h-24 p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#16DB93]/50 text-sm resize-none placeholder:text-white/30"
+                        placeholder="lofi hip hop, 85 bpm, chill vibes, piano and vinyl crackle..."
+                        className="w-full h-28 px-4 py-3 rounded-lg text-sm resize-none transition-all"
+                        style={{
+                          background: 'var(--surface)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text)',
+                          outline: 'none'
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--accent)'}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                       />
                     </div>
 
-                    <Button
+                    <button
                       onClick={() => handleGenerate(prompt)}
                       disabled={generating || !prompt.trim()}
-                      className="w-full py-6 rounded-xl bg-gradient-to-r from-[#16DB93] to-[#3EF3AF] text-black font-bold disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg hover:shadow-[#16DB93]/20 transition-all"
+                      className="w-full py-4 rounded-lg font-semibold disabled:opacity-40 transition-all"
+                      style={{
+                        background: 'var(--accent)',
+                        color: 'white'
+                      }}
+                      onMouseEnter={(e) => !generating && (e.target.style.background = 'var(--accent-hover)')}
+                      onMouseLeave={(e) => !generating && (e.target.style.background = 'var(--accent)')}
                     >
-                      {generating ? (
-                        <>
-                          <div className="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin" />
-                          Composing...
-                        </>
-                      ) : (
-                        <>
-                          <Wand2 className="w-5 h-5" />
-                          Generate Music
-                        </>
-                      )}
-                    </Button>
+                      {generating ? 'Generating...' : 'Generate'}
+                    </button>
 
                     <QuickActions
                       onGenerateVariation={handleQuickGenerate}
@@ -1933,7 +1914,7 @@ function StudioContent() {
       </aside>
 
       {/* Main Workspace */}
-      <main className="flex-1 flex flex-col overflow-hidden" style={{ background: '#0A0A0A' }}>
+      <main className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--bg)' }}>
         {/* Minimal Transport Bar */}
         <div className="sticky top-0 z-10 border-b backdrop-blur-xl" style={{ 
           background: 'rgba(18, 18, 18, 0.8)', 
@@ -2084,14 +2065,14 @@ function StudioContent() {
 
           {tracks.length > 0 ? (
             <Tabs value="timeline" className="h-full flex flex-col min-h-0">
-              <TabsList className="flex-shrink-0 mx-4 mt-3 rounded-lg p-0.5" style={{ background: '#1A1A1A' }}>
-                <TabsTrigger value="timeline" className="gap-2 rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#222] data-[state=active]:text-white text-white/50">
+              <TabsList className="flex-shrink-0 mx-6 mt-4 rounded-lg p-1" style={{ background: 'var(--surface)' }}>
+                <TabsTrigger value="timeline" className="rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#7C3AED] data-[state=active]:text-white text-white/50 font-medium">
                   Timeline
                 </TabsTrigger>
-                <TabsTrigger value="piano" className="gap-2 rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#222] data-[state=active]:text-white text-white/50">
-                  Piano Roll
+                <TabsTrigger value="piano" className="rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#7C3AED] data-[state=active]:text-white text-white/50 font-medium">
+                  Piano
                 </TabsTrigger>
-                <TabsTrigger value="mixer" className="gap-2 rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#222] data-[state=active]:text-white text-white/50">
+                <TabsTrigger value="mixer" className="rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#7C3AED] data-[state=active]:text-white text-white/50 font-medium">
                   Mixer
                 </TabsTrigger>
               </TabsList>
@@ -2199,80 +2180,31 @@ function StudioContent() {
               </TabsContent>
             </Tabs>
           ) : (
-            /* Professional Empty State */
-            <div className="flex items-center justify-center h-full" style={{ background: 'linear-gradient(180deg, #0B0B0F 0%, #060608 100%)' }}>
-              <div className="text-center space-y-10 max-w-3xl px-8">
-                {/* Hero Icon */}
-                <div className="relative">
-                  <div className="w-28 h-28 mx-auto rounded-2xl flex items-center justify-center shadow-2xl"
-                    style={{ background: 'linear-gradient(135deg, #00D9FF 0%, #7C3AED 50%, #EC4899 100%)' }}
-                  >
-                    <Wand2 className="w-14 h-14 text-white" />
-                  </div>
-                  <div className="absolute inset-0 blur-[60px] opacity-30"
-                    style={{ background: 'linear-gradient(135deg, #00D9FF 0%, #7C3AED 50%, #EC4899 100%)' }}
-                  />
+            /* Clean Empty State */
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center space-y-8 max-w-md">
+                <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style={{ background: 'var(--surface)' }}>
+                  <Music className="w-8 h-8 text-white/40" />
                 </div>
 
-                {/* Hero Text */}
                 <div>
-                  <h2 className="text-4xl font-black mb-3 text-white">
-                    Start Creating
+                  <h2 className="text-2xl font-semibold mb-2 text-white">
+                    Create something new
                   </h2>
-                  <p className="text-lg text-[#8B949E]">
-                    Describe your musical vision and watch AI compose it in seconds
+                  <p className="text-sm text-white/50">
+                    Describe your song and let AI compose
                   </p>
                 </div>
 
-                {/* Quick Start Templates */}
-                <div className="grid grid-cols-2 gap-3 max-w-lg mx-auto">
-                  {[
-                    { label: 'Lo-fi Chill', color: '#10B981', desc: 'Relaxed beats, warm keys' },
-                    { label: 'Trap Soul', color: '#8B5CF6', desc: 'Heavy 808s, melodic' },
-                    { label: 'Jazz Fusion', color: '#F59E0B', desc: 'Complex chords, groovy' },
-                    { label: 'Electronic', color: '#00D9FF', desc: 'Synth-driven, energetic' }
-                  ].map((style) => (
-                    <button
-                      key={style.label}
-                      onClick={() => {
-                        setPrompt(style.label.toLowerCase() + ', 120 bpm, ' + style.desc.toLowerCase());
-                        setActiveTab('compose');
-                        toast.success(`Template: ${style.label}`);
-                      }}
-                      className="group p-4 rounded-xl border border-white/5 hover:border-white/10 transition-all text-left"
-                      style={{ background: '#111116' }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#18181F'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#111116'}
-                    >
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: style.color, boxShadow: `0 0 12px ${style.color}50` }} />
-                        <span className="font-bold text-white text-sm">{style.label}</span>
-                      </div>
-                      <p className="text-[11px] text-[#6E7681]">{style.desc}</p>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Stats */}
-                <div className="flex justify-center gap-12 pt-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-black text-[#00FF94]">∞</div>
-                    <div className="text-[10px] text-[#5C5C6E] uppercase tracking-wider">Variations</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-black text-[#00F0FF]">30</div>
-                    <div className="text-[10px] text-[#5C5C6E] uppercase tracking-wider">Max Tracks</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-black text-[#9D5CFF]">WAV</div>
-                    <div className="text-[10px] text-[#5C5C6E] uppercase tracking-wider">Export</div>
-                  </div>
-                </div>
-
-                {/* Keyboard hint */}
-                <p className="text-[11px] text-[#5C5C6E]">
-                  Press <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: '#18181F', color: '#9898A6' }}>⌘K</kbd> for command palette
-                </p>
+                <button
+                  onClick={() => setActiveTab('compose')}
+                  className="px-6 py-3 rounded-lg font-semibold transition-all mx-auto block"
+                  style={{ background: 'var(--accent)', color: 'white' }}
+                  onMouseEnter={(e) => e.target.style.background = 'var(--accent-hover)'}
+                  onMouseLeave={(e) => e.target.style.background = 'var(--accent)'}
+                >
+                  Get Started
+                </button>
               </div>
             </div>
           )}

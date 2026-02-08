@@ -95,10 +95,10 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
   };
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: '#121212' }}>
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-        <h3 className="text-sm font-semibold text-white/80">Mixer</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-base font-semibold text-white">Mixer</h3>
         {totalPages > 1 && (
           <div className="flex items-center gap-2">
             <button
@@ -123,7 +123,7 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
       </div>
 
       {/* Channels */}
-      <div className="flex gap-1 p-3 overflow-x-auto">
+      <div className="flex gap-3 overflow-x-auto pb-4">
         {visibleTracks.map(track => {
           const config = trackTypeConfig[track.type] || trackTypeConfig.melody;
           const trackColor = track.color || config.color;
@@ -138,45 +138,17 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
               key={track.id}
               onClick={() => onSelectTrack?.(track)}
               className={cn(
-                "flex flex-col w-[64px] rounded-lg p-2.5 cursor-pointer transition-all",
+                "flex flex-col w-[72px] rounded-lg p-3 cursor-pointer transition-all border",
                 isSelected 
-                  ? "bg-white/5" 
-                  : "hover:bg-white/[0.03]"
+                  ? "border-[#7C3AED] bg-white/5" 
+                  : "border-transparent hover:border-white/10"
               )}
+              style={{ background: isSelected ? 'rgba(124,58,237,0.05)' : 'var(--surface)' }}
             >
-              {/* Header */}
-              <div className="flex items-center justify-between mb-2">
-                <div 
-                  className="w-2 h-2 rounded-full"
-                  style={{ 
-                    backgroundColor: trackColor, 
-                    boxShadow: `0 0 8px ${trackColor}60`
-                  }}
-                />
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="p-0.5 rounded hover:bg-white/10 text-[#5C5C6E]">
-                      <MoreVertical className="w-3 h-3" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-[#1F1F28] border-white/10">
-                    <DropdownMenuItem className="text-[11px]">Rename</DropdownMenuItem>
-                    <DropdownMenuItem className="text-[11px]">Duplicate</DropdownMenuItem>
-                    <DropdownMenuItem className="text-[11px] text-[#FF4757]">Delete</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              
               {/* Name */}
-              <div className="text-center mb-2">
-                <div 
-                  className="w-7 h-7 mx-auto rounded-lg flex items-center justify-center mb-1"
-                  style={{ background: `${trackColor}15` }}
-                >
-                  <Icon className="w-3.5 h-3.5" style={{ color: trackColor }} />
-                </div>
-                <span className="text-[9px] font-semibold text-white truncate block">{track.name}</span>
-                <span className="text-[8px] text-[#5C5C6E]">Ch {track.channel + 1}</span>
+              <div className="text-center mb-3">
+                <div className="text-xs font-medium text-white/90 truncate mb-0.5">{track.name}</div>
+                <div className="text-[10px] text-white/30">Ch {track.channel + 1}</div>
               </div>
 
               {/* Meter */}
