@@ -23,91 +23,64 @@ export default function Layout({ children }) {
   return (
     <div className="min-h-screen daw-ultimate">
       <style>{`
-        /* Professional DAW Design System - Suno Grade */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+        /* Suno-Grade Design System */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
         :root {
-          /* Ultra-Dark Premium Palette */
-          --void: #000000;
-          --abyss: #0A0A0F;
-          --deep: #0F0F14;
-          --surface: #141419;
-          --elevated: #1A1A21;
-          --raised: #20202A;
-          --hover: #282833;
-          --active: #30303D;
+          /* Minimal Dark Palette */
+          --void: #0A0A0A;
+          --deep: #121212;
+          --surface: #1A1A1A;
+          --elevated: #222222;
+          --raised: #2A2A2A;
+          --hover: #333333;
           
-          /* Premium Neon Palette */
-          --neon-cyan: #00FFFF;
-          --neon-blue: #5E7CFF;
-          --neon-purple: #A855FF;
-          --neon-pink: #FF3D9F;
-          --neon-green: #00FFA3;
-          --neon-orange: #FF9D00;
-          --neon-red: #FF3F5F;
-          --neon-yellow: #FFE500;
+          /* Refined Accent Palette */
+          --primary: #8B5CF6;
+          --primary-light: #A78BFA;
+          --secondary: #10B981;
+          --accent: #06B6D4;
+          --warning: #F59E0B;
+          --danger: #EF4444;
           
-          /* Accent Gradients */
-          --accent-1: linear-gradient(135deg, #00FFFF 0%, #5E7CFF 100%);
-          --accent-2: linear-gradient(135deg, #A855FF 0%, #FF3D9F 100%);
-          --accent-3: linear-gradient(135deg, #00FFA3 0%, #00FFFF 100%);
-          --accent-4: linear-gradient(135deg, #FF9D00 0%, #FF3F5F 100%);
+          /* Text Hierarchy */
+          --text-primary: #FFFFFF;
+          --text-secondary: #A1A1AA;
+          --text-tertiary: #71717A;
+          --text-disabled: #52525B;
           
-          /* Text */
-          --text-bright: #FFFFFF;
-          --text-primary: #E8E8ED;
-          --text-secondary: #9898A6;
-          --text-tertiary: #5C5C6E;
-          --text-disabled: #3A3A48;
+          /* Borders & Dividers */
+          --border: rgba(255, 255, 255, 0.08);
+          --border-strong: rgba(255, 255, 255, 0.12);
+          --divider: rgba(255, 255, 255, 0.06);
           
-          /* Borders */
-          --border-subtle: rgba(255, 255, 255, 0.04);
-          --border-dim: rgba(255, 255, 255, 0.08);
-          --border-default: rgba(255, 255, 255, 0.12);
-          --border-bright: rgba(255, 255, 255, 0.2);
-          
-          /* Gradients */
-          --grad-neon: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
-          --grad-fire: linear-gradient(135deg, var(--neon-orange) 0%, var(--neon-red) 100%);
-          --grad-nature: linear-gradient(135deg, var(--neon-green) 0%, var(--neon-cyan) 100%);
-          --grad-sunset: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-orange) 100%);
-          --grad-surface: linear-gradient(180deg, var(--surface) 0%, var(--abyss) 100%);
-          --grad-glass: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
-          
-          /* Shadows & Glows */
-          --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
-          --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
-          --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
-          --shadow-xl: 0 16px 64px rgba(0,0,0,0.7);
-          --glow-cyan: 0 0 24px rgba(0, 240, 255, 0.35);
-          --glow-purple: 0 0 24px rgba(157, 92, 255, 0.35);
-          --glow-green: 0 0 24px rgba(0, 255, 148, 0.35);
-          --glow-red: 0 0 24px rgba(255, 71, 87, 0.35);
+          /* Shadows */
+          --shadow-sm: 0 1px 2px rgba(0,0,0,0.5);
+          --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+          --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+          --shadow-xl: 0 12px 40px rgba(0,0,0,0.6);
           
           /* Typography */
-          --font-display: 'Outfit', sans-serif;
-          --font-ui: 'Inter', -apple-system, sans-serif;
-          --font-mono: 'JetBrains Mono', monospace;
+          --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          --font-mono: 'JetBrains Mono', 'Courier New', monospace;
           
-          /* Spacing & Radius */
-          --radius-xs: 4px;
+          /* Radius */
           --radius-sm: 6px;
-          --radius-md: 10px;
-          --radius-lg: 14px;
-          --radius-xl: 20px;
-          --radius-2xl: 28px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
         }
 
         /* Base */
         .daw-ultimate {
           background: var(--void);
           color: var(--text-primary);
-          font-family: var(--font-ui);
-          font-size: 13px;
-          line-height: 1.5;
+          font-family: var(--font-sans);
+          font-size: 14px;
+          line-height: 1.6;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          overflow: hidden;
+          letter-spacing: -0.01em;
         }
 
         /* Custom Scrollbar */
@@ -159,59 +132,36 @@ export default function Layout({ children }) {
           box-shadow: var(--glow-cyan);
         }
 
-        /* Professional Transport Controls */
+        /* Minimal Transport Controls */
         .transport-btn {
-          width: 48px;
-          height: 48px;
-          border-radius: 12px;
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-lg);
           display: flex;
           align-items: center;
           justify-content: center;
           background: var(--elevated);
-          border: 1px solid rgba(255,255,255,0.08);
+          border: none;
           color: var(--text-secondary);
-          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-          overflow: hidden;
-        }
-        .transport-btn::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
-          opacity: 0;
-          transition: opacity 0.15s;
-        }
-        .transport-btn:hover::before {
-          opacity: 1;
+          transition: all 0.12s ease;
         }
         .transport-btn:hover {
           background: var(--raised);
-          color: var(--text-bright);
-          border-color: rgba(255,255,255,0.15);
-          transform: translateY(-1px);
+          color: var(--text-primary);
         }
         .transport-btn:active {
-          transform: translateY(0) scale(0.98);
+          transform: scale(0.96);
         }
         .transport-btn.play {
-          width: 64px;
-          height: 64px;
-          border-radius: 16px;
-          background: linear-gradient(135deg, #00FFA3 0%, #00FFFF 100%);
-          border: none;
-          color: #000;
-          box-shadow: 0 8px 32px rgba(0,255,163,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+          width: 56px;
+          height: 56px;
+          background: var(--primary);
+          color: white;
+          box-shadow: var(--shadow-md);
         }
         .transport-btn.play:hover {
-          transform: translateY(-2px) scale(1.02);
-          box-shadow: 0 12px 48px rgba(0,255,163,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
-        }
-        .transport-btn.stop {
-          background: linear-gradient(135deg, #FF3F5F 0%, #FF6B7A 100%);
-          border: none;
-          color: white;
-          box-shadow: 0 4px 16px rgba(255,63,95,0.3);
+          background: var(--primary-light);
+          box-shadow: var(--shadow-lg);
         }
 
         /* Meter Styling */
