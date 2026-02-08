@@ -95,10 +95,10 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
   };
 
   return (
-    <div className="rounded-xl border border-white/5 overflow-hidden" style={{ background: 'linear-gradient(180deg, #111116 0%, #060608 100%)' }}>
+    <div className="rounded-xl overflow-hidden" style={{ background: '#121212' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5" style={{ background: 'rgba(255,255,255,0.02)' }}>
-        <h3 className="text-[10px] font-bold text-[#5C5C6E] uppercase tracking-widest">Channel Mixer</h3>
+      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <h3 className="text-sm font-semibold text-white/80">Mixer</h3>
         {totalPages > 1 && (
           <div className="flex items-center gap-2">
             <button
@@ -138,16 +138,11 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
               key={track.id}
               onClick={() => onSelectTrack?.(track)}
               className={cn(
-                "flex flex-col w-[68px] rounded-xl p-2 cursor-pointer transition-all",
+                "flex flex-col w-[64px] rounded-lg p-2.5 cursor-pointer transition-all",
                 isSelected 
-                  ? "ring-1 ring-[#00F0FF]/40 shadow-[0_0_20px_rgba(0,240,255,0.1)]" 
-                  : "hover:bg-white/[0.02]"
+                  ? "bg-white/5" 
+                  : "hover:bg-white/[0.03]"
               )}
-              style={{ 
-                background: isSelected 
-                  ? `linear-gradient(180deg, ${trackColor}08 0%, transparent 100%)` 
-                  : 'linear-gradient(180deg, #18181F 0%, #111116 100%)'
-              }}
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-2">

@@ -72,11 +72,11 @@ export default function PianoRollEditor({
     const pixelsPerNote = height / noteRange;
     
     // Background
-    ctx.fillStyle = '#060608';
+    ctx.fillStyle = '#0F0F0F';
     ctx.fillRect(0, 0, width, height);
     
     // Piano keys area
-    ctx.fillStyle = '#0B0B0F';
+    ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, keyWidth, height);
     
     // Note rows
@@ -91,19 +91,19 @@ export default function PianoRollEditor({
       
       // Row background
       if (isWhiteKey) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.015)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
         ctx.fillRect(keyWidth, y, contentWidth, pixelsPerNote);
       }
       
       // Scale highlighting
       if (scaleHighlight?.notes?.includes(noteInOctave)) {
-        ctx.fillStyle = 'rgba(0, 240, 255, 0.025)';
+        ctx.fillStyle = 'rgba(139, 92, 246, 0.04)';
         ctx.fillRect(keyWidth, y, contentWidth, pixelsPerNote);
       }
       
       // C note lines
       if (isC) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(keyWidth, y + pixelsPerNote);
@@ -116,18 +116,18 @@ export default function PianoRollEditor({
       const keyH = pixelsPerNote;
       
       if (isWhiteKey) {
-        ctx.fillStyle = '#E8E8ED';
-        ctx.fillRect(0, keyY + 1, keyWidth - 3, keyH - 2);
+        ctx.fillStyle = '#E5E5E5';
+        ctx.fillRect(0, keyY + 1, keyWidth - 2, keyH - 1);
         
         if (isC) {
           const octave = Math.floor(i / 12) - 1;
-          ctx.fillStyle = '#00F0FF';
-          ctx.font = 'bold 9px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#71717A';
+          ctx.font = '500 9px "Inter", sans-serif';
           ctx.fillText(`C${octave}`, 4, keyY + keyH - 4);
         }
       } else {
-        ctx.fillStyle = '#18181F';
-        ctx.fillRect(0, keyY + 1, keyWidth - 10, keyH - 2);
+        ctx.fillStyle = '#1A1A1A';
+        ctx.fillRect(0, keyY + 1, keyWidth - 8, keyH - 1);
       }
     }
     
@@ -140,10 +140,10 @@ export default function PianoRollEditor({
       const isBeat = beat % 1 === 0;
       
       ctx.strokeStyle = isBar 
-        ? 'rgba(255, 255, 255, 0.08)' 
+        ? 'rgba(255, 255, 255, 0.06)' 
         : isBeat 
-        ? 'rgba(255, 255, 255, 0.04)' 
-        : 'rgba(255, 255, 255, 0.02)';
+        ? 'rgba(255, 255, 255, 0.03)' 
+        : 'rgba(255, 255, 255, 0.015)';
       ctx.lineWidth = 1;
       
       ctx.beginPath();
@@ -157,17 +157,15 @@ export default function PianoRollEditor({
       tracks.forEach(track => {
         if (track.id === selectedTrackId || track.muted || !track.notes) return;
         
-        const ghostColor = trackColors[track.type]?.fill || '#5C5C6E';
-        
         track.notes.forEach(note => {
           const x = keyWidth + (note.start * pixelsPerBeat) - scrollX;
           const w = Math.max(note.duration * pixelsPerBeat, 2);
           const y = height - ((note.pitch - minNote + 1) * pixelsPerNote);
-          const h = pixelsPerNote * 0.8;
+          const h = pixelsPerNote * 0.75;
           
           if (x + w < keyWidth || x > width) return;
           
-          ctx.fillStyle = ghostColor + '10';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
           ctx.fillRect(x, y, w, h);
         });
       });
@@ -175,51 +173,34 @@ export default function PianoRollEditor({
     
     // Selected track notes
     if (selectedTrack?.notes) {
-      const colors = trackColors[selectedTrack.type] || { fill: '#5C5C6E', stroke: '#8A8A9A', glow: 'rgba(92, 92, 110, 0.4)' };
-      
       selectedTrack.notes.forEach((note, idx) => {
         const x = keyWidth + (note.start * pixelsPerBeat) - scrollX;
         const w = Math.max(note.duration * pixelsPerBeat - 1, 4);
         const y = height - ((note.pitch - minNote + 1) * pixelsPerNote);
-        const h = pixelsPerNote * 0.8;
+        const h = pixelsPerNote * 0.75;
         
         if (x + w < keyWidth || x > width) return;
         
         const isHovered = hoveredNote?.noteIdx === idx;
         const isSelected = selectedNotes.includes(idx);
         
-        // Glow
-        if (isSelected || isHovered) {
-          ctx.shadowColor = isSelected ? '#FFDD00' : colors.glow;
-          ctx.shadowBlur = 12;
-        }
-        
-        // Note gradient
-        const noteGrad = ctx.createLinearGradient(x, y, x + w, y);
-        noteGrad.addColorStop(0, colors.fill);
-        noteGrad.addColorStop(1, colors.stroke);
-        ctx.fillStyle = noteGrad;
-        
-        // Rounded note
+        // Note fill - simple purple
+        ctx.fillStyle = isSelected ? '#A78BFA' : '#8B5CF6';
         ctx.beginPath();
-        ctx.roundRect(x, y, w, h, 3);
+        ctx.roundRect(x, y, w, h, 2);
         ctx.fill();
         
-        // Border
-        ctx.strokeStyle = isSelected ? '#FFDD00' : colors.stroke;
-        ctx.lineWidth = isSelected ? 2 : 1;
-        ctx.stroke();
+        // Subtle border
+        if (isHovered) {
+          ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
         
-        ctx.shadowBlur = 0;
-        
-        // Velocity indicator
-        const velHeight = (note.velocity / 127) * h;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-        ctx.fillRect(x + 2, y + h - velHeight, 3, velHeight);
-        
-        // Top highlight
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-        ctx.fillRect(x, y, w, 2);
+        // Velocity brightness
+        const brightness = note.velocity / 127;
+        ctx.fillStyle = `rgba(255, 255, 255, ${brightness * 0.2})`;
+        ctx.fillRect(x, y, w, h);
       });
     }
     
@@ -263,23 +244,12 @@ export default function PianoRollEditor({
     if (currentBeat >= 0 && currentBeat <= totalBeats) {
       const x = keyWidth + (currentBeat * pixelsPerBeat) - scrollX;
       if (x >= keyWidth && x <= width) {
-        // Glow
-        const glowGrad = ctx.createLinearGradient(x - 20, 0, x + 20, 0);
-        glowGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
-        glowGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.08)');
-        glowGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
-        ctx.fillStyle = glowGrad;
-        ctx.fillRect(x - 20, 0, 40, height);
-        
-        ctx.strokeStyle = '#00F0FF';
-        ctx.lineWidth = 2;
-        ctx.shadowColor = '#00F0FF';
-        ctx.shadowBlur = 12;
+        ctx.strokeStyle = '#8B5CF6';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, height);
         ctx.stroke();
-        ctx.shadowBlur = 0;
       }
     }
   }, [tracks, currentBeat, totalBeats, hoveredNote, draggingNote, drawingNote, selectedNotes, selectionBox, ghostTracks, scrollX, zoom, selectedTrackId, selectedTrack, gridSnap, scaleHighlight]);
@@ -483,53 +453,43 @@ export default function PianoRollEditor({
   ];
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#060608' }}>
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/5" style={{ background: 'linear-gradient(180deg, #18181F 0%, #111116 100%)' }}>
+    <div className="flex flex-col h-full" style={{ background: '#0F0F0F' }}>
+      {/* Minimal Toolbar */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ background: '#121212', borderColor: 'rgba(255,255,255,0.06)' }}>
         <div className="flex items-center gap-1">
-          {tools.map(({ id, icon: Icon, label }) => (
+          {tools.map(({ id, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setTool(id)}
               className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
                 tool === id 
-                  ? "text-[#030305] shadow-[0_0_16px_rgba(0,240,255,0.4)]" 
-                  : "text-[#9898A6] hover:text-white hover:bg-white/5"
+                  ? "bg-[#8B5CF6] text-white" 
+                  : "text-white/40 hover:text-white/80 hover:bg-white/5"
               )}
-              style={tool === id ? { background: '#00F0FF' } : {}}
             >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
+              <Icon className="w-4 h-4" />
             </button>
           ))}
-
-          <div className="w-px h-5 bg-white/10 mx-2" />
 
           <button
             onClick={() => setGhostTracks(!ghostTracks)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+              "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
               ghostTracks 
-                ? "text-[#C49DFF] border border-[#9D5CFF]/30" 
-                : "text-[#9898A6] hover:text-white hover:bg-white/5"
+                ? "bg-white/10 text-white" 
+                : "text-white/40 hover:text-white/80"
             )}
-            style={ghostTracks ? { background: 'rgba(157, 92, 255, 0.15)' } : {}}
           >
-            <Zap className="w-3.5 h-3.5" />
-            Ghost
+            <Zap className="w-4 h-4" />
           </button>
         </div>
 
         <div className="flex items-center gap-3">
           {selectedNotes.length > 0 && (
-            <span className="text-xs font-medium" style={{ color: '#00F0FF' }}>
+            <span className="text-sm font-medium text-white/60">
               {selectedNotes.length} selected
             </span>
-          )}
-          
-          {!selectedTrackId && (
-            <span className="text-xs text-[#5C5C6E]">Select a track to edit</span>
           )}
         </div>
       </div>

@@ -2084,17 +2084,14 @@ function StudioContent() {
 
           {tracks.length > 0 ? (
             <Tabs value="timeline" className="h-full flex flex-col min-h-0">
-              <TabsList className="flex-shrink-0 mx-4 mt-3 border border-white/5 rounded-xl p-1 shadow-lg" style={{ background: '#0B0B0F' }}>
-                <TabsTrigger value="timeline" className="gap-2 rounded-lg data-[state=active]:bg-[#1C232D] data-[state=active]:text-white text-[#6E7681] text-xs px-4 py-2 transition-all">
-                  <Layers className="w-3.5 h-3.5" />
+              <TabsList className="flex-shrink-0 mx-4 mt-3 rounded-lg p-0.5" style={{ background: '#1A1A1A' }}>
+                <TabsTrigger value="timeline" className="gap-2 rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#222] data-[state=active]:text-white text-white/50">
                   Timeline
                 </TabsTrigger>
-                <TabsTrigger value="piano" className="gap-2 rounded-lg data-[state=active]:bg-[#1C232D] data-[state=active]:text-white text-[#6E7681] text-xs px-4 py-2 transition-all">
-                  <Music2 className="w-3.5 h-3.5" />
+                <TabsTrigger value="piano" className="gap-2 rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#222] data-[state=active]:text-white text-white/50">
                   Piano Roll
                 </TabsTrigger>
-                <TabsTrigger value="mixer" className="gap-2 rounded-lg data-[state=active]:bg-[#1C232D] data-[state=active]:text-white text-[#6E7681] text-xs px-4 py-2 transition-all">
-                  <Sliders className="w-3.5 h-3.5" />
+                <TabsTrigger value="mixer" className="gap-2 rounded-md text-sm px-4 py-2 transition-all data-[state=active]:bg-[#222] data-[state=active]:text-white text-white/50">
                   Mixer
                 </TabsTrigger>
               </TabsList>
@@ -2152,23 +2149,15 @@ function StudioContent() {
                 )}
               </TabsContent>
 
-              <TabsContent value="piano" className="flex-1 m-0 p-4 overflow-hidden">
-                <div className="rounded-xl border border-white/5 overflow-hidden shadow-xl h-full flex flex-col" style={{ background: '#0B0B0F' }}>
-                  <div className="px-4 py-3 border-b border-white/5 flex-shrink-0 flex items-center justify-between" style={{ background: 'linear-gradient(90deg, #111116 0%, #0B0B0F 100%)' }}>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E] flex items-center gap-2">
-                      {selectedTrack?.isAudio ? <Headphones className="w-4 h-4" /> : <Music2 className="w-4 h-4" />}
-                      {selectedTrack?.isAudio ? 'Waveform Editor' : 'Piano Roll'}
-                      {selectedTrack && (
-                        <span className="ml-2 text-[#00D9FF] font-medium normal-case">
-                          — {selectedTrack.name}
-                        </span>
-                      )}
+              <TabsContent value="piano" className="flex-1 m-0 p-0 overflow-hidden">
+                <div className="h-full flex flex-col">
+                  <div className="px-4 py-3 border-b flex-shrink-0 flex items-center justify-between" style={{ background: '#121212', borderColor: 'rgba(255,255,255,0.06)' }}>
+                    <h3 className="text-sm font-semibold text-white/80">
+                      {selectedTrack ? selectedTrack.name : 'Piano Roll'}
                     </h3>
                     {selectedTrack && (
-                      <div className="flex items-center gap-2 text-[10px] text-[#6E7681]">
-                        <span>{selectedTrack.notes?.length || 0} notes</span>
-                        <span>•</span>
-                        <span>Ch {(selectedTrack.channel || 0) + 1}</span>
+                      <div className="text-sm text-white/40">
+                        {selectedTrack.notes?.length || 0} notes
                       </div>
                     )}
                   </div>

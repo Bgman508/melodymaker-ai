@@ -499,59 +499,55 @@ export default function DAWTimeline({
   };
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#060608' }}>
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/5" 
-        style={{ background: 'linear-gradient(180deg, #18181F 0%, #111116 100%)' }}>
+    <div className="flex flex-col h-full" style={{ background: '#0F0F0F' }}>
+      {/* Minimal Toolbar */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b" 
+        style={{ background: '#121212', borderColor: 'rgba(255,255,255,0.06)' }}>
         <div className="flex items-center gap-1">
           {[
-            { id: 'select', icon: Move, label: 'Select' },
-            { id: 'loop', icon: Repeat, label: 'Loop' },
-          ].map(({ id, icon: Icon, label }) => (
+            { id: 'select', icon: Move },
+            { id: 'loop', icon: Repeat },
+          ].map(({ id, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setTool(id)}
               className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
                 tool === id 
-                  ? "bg-[#00F0FF] text-[#060608] shadow-[0_0_16px_rgba(0,240,255,0.4)]" 
-                  : "text-[#9898A6] hover:text-white hover:bg-white/5"
+                  ? "bg-[#8B5CF6] text-white" 
+                  : "text-white/40 hover:text-white/80 hover:bg-white/5"
               )}
             >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
+              <Icon className="w-4 h-4" />
             </button>
           ))}
-
-          <div className="w-px h-5 bg-white/10 mx-2" />
 
           <button
             onClick={() => setSnapToGrid(!snapToGrid)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+              "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
               snapToGrid 
-                ? "bg-[#9D5CFF]/20 text-[#C49DFF] border border-[#9D5CFF]/30" 
-                : "text-[#9898A6] hover:text-white hover:bg-white/5"
+                ? "bg-white/10 text-white" 
+                : "text-white/40 hover:text-white/80"
             )}
           >
-            <Magnet className="w-3.5 h-3.5" />
-            Snap
+            <Magnet className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/30 border border-white/5">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setInternalZoom(Math.max(30, internalZoom - 20))}
-            className="p-1 rounded hover:bg-white/10 text-[#5C5C6E] hover:text-white transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/5 transition-all"
           >
-            <ZoomOut className="w-3.5 h-3.5" />
+            <ZoomOut className="w-4 h-4" />
           </button>
-          <span className="text-[10px] font-mono text-[#5C5C6E] w-10 text-center">{internalZoom}%</span>
+          <span className="text-xs font-mono text-white/60 w-12 text-center">{internalZoom}%</span>
           <button
             onClick={() => setInternalZoom(Math.min(300, internalZoom + 20))}
-            className="p-1 rounded hover:bg-white/10 text-[#5C5C6E] hover:text-white transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/5 transition-all"
           >
-            <ZoomIn className="w-3.5 h-3.5" />
+            <ZoomIn className="w-4 h-4" />
           </button>
         </div>
       </div>

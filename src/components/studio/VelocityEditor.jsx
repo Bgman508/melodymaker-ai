@@ -27,20 +27,21 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
     const pixelsPerBeat = contentWidth / totalBeats;
 
     // Background
-    ctx.fillStyle = '#060608';
+    ctx.fillStyle = '#0F0F0F';
     ctx.fillRect(0, 0, width, height);
 
     // Grid
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
     for (let beat = 0; beat <= totalBeats; beat++) {
       const x = keyWidth + (beat * pixelsPerBeat);
       const isBar = beat % 4 === 0;
-      ctx.strokeStyle = isBar ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)';
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
+      if (isBar) {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
     }
 
     // Velocity bars
@@ -50,35 +51,15 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
       const barHeight = (note.velocity / 127) * (height - 8);
       const isSelected = selectedNotes.includes(idx);
 
-      // Bar gradient
-      const gradient = ctx.createLinearGradient(x, height, x, height - barHeight);
-      if (isSelected) {
-        gradient.addColorStop(0, '#FF9500');
-        gradient.addColorStop(1, '#FFDD00');
-      } else {
-        gradient.addColorStop(0, '#00FF94');
-        gradient.addColorStop(1, '#00F0FF');
-      }
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(x, height - barHeight - 4, w, barHeight);
-      
-      // Glow
-      if (isSelected) {
-        ctx.shadowColor = '#FFDD00';
-        ctx.shadowBlur = 8;
-      }
-
-      // Top cap
-      ctx.fillStyle = isSelected ? '#FFDD00' : '#00F0FF';
-      ctx.fillRect(x, height - barHeight - 4, w, 3);
-      ctx.shadowBlur = 0;
+      // Simple bar
+      ctx.fillStyle = isSelected ? '#A78BFA' : 'rgba(139,92,246,0.7)';
+      ctx.fillRect(x, height - barHeight - 2, w, barHeight);
     });
 
     // Label
-    ctx.fillStyle = '#5C5C6E';
-    ctx.font = 'bold 9px "JetBrains Mono", monospace';
-    ctx.fillText('VEL', 8, 16);
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '500 10px "Inter", sans-serif';
+    ctx.fillText('Velocity', 8, 14);
   };
 
   const handleMouseDown = (e) => {
@@ -118,7 +99,7 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
   };
 
   return (
-    <div className="h-16" style={{ background: '#060608' }}>
+    <div className="h-16 border-t" style={{ background: '#0F0F0F', borderColor: 'rgba(255,255,255,0.06)' }}>
       <canvas
         ref={canvasRef}
         className="w-full h-full cursor-ns-resize"
