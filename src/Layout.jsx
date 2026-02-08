@@ -23,29 +23,35 @@ export default function Layout({ children }) {
   return (
     <div className="min-h-screen daw-ultimate">
       <style>{`
-        /* Ultimate DAW Design System */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+        /* Professional DAW Design System - Suno Grade */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
         :root {
-          /* Refined Dark Palette */
-          --void: #030305;
-          --abyss: #060608;
-          --deep: #0B0B0F;
-          --surface: #111116;
-          --elevated: #18181F;
-          --raised: #1F1F28;
-          --hover: #2A2A36;
-          --active: #35354A;
+          /* Ultra-Dark Premium Palette */
+          --void: #000000;
+          --abyss: #0A0A0F;
+          --deep: #0F0F14;
+          --surface: #141419;
+          --elevated: #1A1A21;
+          --raised: #20202A;
+          --hover: #282833;
+          --active: #30303D;
           
-          /* Neon Accents */
-          --neon-cyan: #00F0FF;
-          --neon-blue: #4D7CFF;
-          --neon-purple: #9D5CFF;
-          --neon-pink: #FF5CAA;
-          --neon-green: #00FF94;
-          --neon-orange: #FF9500;
-          --neon-red: #FF4757;
-          --neon-yellow: #FFDD00;
+          /* Premium Neon Palette */
+          --neon-cyan: #00FFFF;
+          --neon-blue: #5E7CFF;
+          --neon-purple: #A855FF;
+          --neon-pink: #FF3D9F;
+          --neon-green: #00FFA3;
+          --neon-orange: #FF9D00;
+          --neon-red: #FF3F5F;
+          --neon-yellow: #FFE500;
+          
+          /* Accent Gradients */
+          --accent-1: linear-gradient(135deg, #00FFFF 0%, #5E7CFF 100%);
+          --accent-2: linear-gradient(135deg, #A855FF 0%, #FF3D9F 100%);
+          --accent-3: linear-gradient(135deg, #00FFA3 0%, #00FFFF 100%);
+          --accent-4: linear-gradient(135deg, #FF9D00 0%, #FF3F5F 100%);
           
           /* Text */
           --text-bright: #FFFFFF;
@@ -153,42 +159,59 @@ export default function Layout({ children }) {
           box-shadow: var(--glow-cyan);
         }
 
-        /* Transport Controls */
+        /* Professional Transport Controls */
         .transport-btn {
-          width: 44px;
-          height: 44px;
-          border-radius: var(--radius-lg);
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: var(--elevated);
-          border: 1px solid var(--border-dim);
+          border: 1px solid rgba(255,255,255,0.08);
           color: var(--text-secondary);
-          transition: all 0.2s ease;
+          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .transport-btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+          opacity: 0;
+          transition: opacity 0.15s;
+        }
+        .transport-btn:hover::before {
+          opacity: 1;
         }
         .transport-btn:hover {
           background: var(--raised);
           color: var(--text-bright);
-          border-color: var(--border-default);
+          border-color: rgba(255,255,255,0.15);
+          transform: translateY(-1px);
+        }
+        .transport-btn:active {
+          transform: translateY(0) scale(0.98);
         }
         .transport-btn.play {
-          width: 56px;
-          height: 56px;
-          border-radius: var(--radius-xl);
-          background: var(--grad-nature);
+          width: 64px;
+          height: 64px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #00FFA3 0%, #00FFFF 100%);
           border: none;
-          color: var(--void);
-          box-shadow: var(--glow-green);
+          color: #000;
+          box-shadow: 0 8px 32px rgba(0,255,163,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
         }
         .transport-btn.play:hover {
-          transform: scale(1.05);
-          box-shadow: 0 0 40px rgba(0, 255, 148, 0.5);
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 12px 48px rgba(0,255,163,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
         }
         .transport-btn.stop {
-          background: var(--grad-fire);
+          background: linear-gradient(135deg, #FF3F5F 0%, #FF6B7A 100%);
           border: none;
           color: white;
-          box-shadow: var(--glow-red);
+          box-shadow: 0 4px 16px rgba(255,63,95,0.3);
         }
 
         /* Meter Styling */
