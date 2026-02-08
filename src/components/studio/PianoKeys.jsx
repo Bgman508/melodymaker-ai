@@ -14,7 +14,7 @@ export default function PianoKeys({ startNote = 24, endNote = 108, onNotePlay, o
   };
 
   return (
-    <div className="h-full flex flex-col-reverse overflow-hidden" style={{ background: '#0B0B0F' }}>
+    <div className="h-full flex flex-col-reverse overflow-hidden" style={{ background: '#1A1A1A' }}>
       {Array.from({ length: noteRange }, (_, i) => {
         const midiNote = startNote + i;
         const noteInOctave = midiNote % 12;
@@ -27,19 +27,19 @@ export default function PianoKeys({ startNote = 24, endNote = 108, onNotePlay, o
           <div
             key={midiNote}
             className={`
-              flex items-center justify-end pr-1 text-[8px] font-mono cursor-pointer transition-all
+              flex items-center justify-end pr-2 text-[9px] cursor-pointer transition-all
               ${isWhite 
-                ? 'bg-[#E8E8ED] hover:bg-[#D8D8E3] text-[#111116] border-b border-white/10' 
-                : 'bg-[#18181F] hover:bg-[#1F1F28] text-[#5C5C6E] border-b border-white/5'
+                ? 'bg-[#E5E5E5] hover:bg-[#D5D5D5] text-black/60 border-b border-black/10' 
+                : 'bg-[#222] hover:bg-[#2A2A2A] text-white/30 border-b border-white/5'
               }
-              ${isC ? 'border-b-2 border-[#00F0FF]' : ''}
+              ${isC ? 'border-b border-[#7C3AED]' : ''}
             `}
             style={{ flex: 1, minHeight: '1px' }}
             onMouseDown={() => handleMouseDown(midiNote)}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
           >
-            {isC && <span className="text-[#00F0FF] font-bold">C{octave}</span>}
+            {isC && <span className="font-semibold" style={{ color: isWhite ? '#52525B' : '#A1A1AA' }}>C{octave}</span>}
           </div>
         );
       })}

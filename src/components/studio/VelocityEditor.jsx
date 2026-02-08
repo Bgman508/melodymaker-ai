@@ -27,7 +27,7 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
     const pixelsPerBeat = contentWidth / totalBeats;
 
     // Background
-    ctx.fillStyle = '#0F0F0F';
+    ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, width, height);
 
     // Grid
@@ -99,7 +99,7 @@ export default function VelocityEditor({ notes, selectedNotes = [], onUpdateVelo
   };
 
   return (
-    <div className="h-16 border-t" style={{ background: '#0F0F0F', borderColor: 'rgba(255,255,255,0.06)' }}>
+    <div className="h-20 border-t" style={{ background: '#121212', borderColor: 'var(--border)' }}>
       <canvas
         ref={canvasRef}
         className="w-full h-full cursor-ns-resize"

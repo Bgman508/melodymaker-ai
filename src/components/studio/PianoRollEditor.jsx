@@ -72,11 +72,11 @@ export default function PianoRollEditor({
     const pixelsPerNote = height / noteRange;
     
     // Background
-    ctx.fillStyle = '#0F0F0F';
+    ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, width, height);
     
     // Piano keys area
-    ctx.fillStyle = '#121212';
+    ctx.fillStyle = '#1A1A1A';
     ctx.fillRect(0, 0, keyWidth, height);
     
     // Note rows
@@ -453,9 +453,9 @@ export default function PianoRollEditor({
   ];
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#0F0F0F' }}>
-      {/* Minimal Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ background: '#121212', borderColor: 'rgba(255,255,255,0.06)' }}>
+    <div className="flex flex-col h-full" style={{ background: '#121212' }}>
+      {/* Toolbar */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-1">
           {tools.map(({ id, icon: Icon }) => (
             <button

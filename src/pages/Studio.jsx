@@ -2130,10 +2130,10 @@ function StudioContent() {
                 )}
               </TabsContent>
 
-              <TabsContent value="piano" className="flex-1 m-0 p-0 overflow-hidden">
-                <div className="h-full flex flex-col">
-                  <div className="px-4 py-3 border-b flex-shrink-0 flex items-center justify-between" style={{ background: '#121212', borderColor: 'rgba(255,255,255,0.06)' }}>
-                    <h3 className="text-sm font-semibold text-white/80">
+              <TabsContent value="piano" className="flex-1 m-0 p-6 overflow-hidden">
+                <div className="h-full flex flex-col rounded-lg overflow-hidden border" style={{ borderColor: 'var(--border)' }}>
+                  <div className="px-5 py-3 border-b flex-shrink-0 flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+                    <h3 className="text-sm font-medium text-white">
                       {selectedTrack ? selectedTrack.name : 'Piano Roll'}
                     </h3>
                     {selectedTrack && (

@@ -152,66 +152,25 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
               </div>
 
               {/* Meter */}
-              <div className="relative h-[130px] mb-2 mx-auto w-5">
-                <div className="absolute inset-0 bg-[#060608] rounded-md border border-white/5 overflow-hidden">
-                  {/* dB scale */}
-                  {[0, 25, 50, 75].map((pct) => (
-                    <div 
-                      key={pct}
-                      className="absolute left-0 right-0 h-px bg-white/10"
-                      style={{ bottom: `${pct}%` }}
-                    />
-                  ))}
-                  
-                  {/* Meter fill with gradient */}
+              <div className="relative h-[120px] mb-3 mx-auto w-6">
+                <div className="absolute inset-0 rounded-md overflow-hidden" style={{ background: 'rgba(0,0,0,0.3)' }}>
+                  {/* Meter fill */}
                   <div
                     className="absolute bottom-0 left-0 right-0 transition-all duration-[50ms]"
                     style={{
                       height: `${meterLevel}%`,
-                      background: isClipping 
-                        ? 'linear-gradient(0deg, #00FF94 0%, #FFDD00 70%, #FF4757 100%)' 
-                        : meterLevel > 70 
-                        ? 'linear-gradient(0deg, #00FF94 0%, #FFDD00 100%)' 
-                        : 'linear-gradient(0deg, #00FF94 0%, #00F0FF 100%)',
-                      boxShadow: `0 0 12px ${isClipping ? '#FF4757' : '#00FF94'}40`
+                      background: isClipping ? '#EF4444' : meterLevel > 70 ? '#F59E0B' : '#7C3AED'
                     }}
                   />
-                  
-                  {/* Peak hold */}
-                  {peakLevel > 5 && (
-                    <div
-                      className="absolute left-0 right-0 h-[2px] transition-all"
-                      style={{
-                        bottom: `${peakLevel}%`,
-                        backgroundColor: isClipping ? '#FF4757' : '#FFDD00',
-                        boxShadow: `0 0 6px ${isClipping ? '#FF4757' : '#FFDD00'}`
-                      }}
-                    />
-                  )}
                 </div>
                 
-                {/* Clip indicator */}
-                <div 
-                  className={cn(
-                    "absolute -top-0.5 left-1/2 -translate-x-1/2 w-3 h-1 rounded-full transition-all",
-                    isClipping ? "bg-[#FF4757] shadow-[0_0_8px_#FF4757]" : "bg-[#1F1F28]"
-                  )}
-                />
+
               </div>
 
-              {/* dB readout */}
-              <div className="text-center mb-2">
-                <span className={cn(
-                  "text-[9px] font-mono px-1.5 py-0.5 rounded",
-                  isClipping ? "bg-[#FF4757]/20 text-[#FF4757]" : "bg-black/40 text-[#9898A6]"
-                )}>
-                  {formatDb(meterLevel)}
-                </span>
-              </div>
 
-              {/* Volume Fader */}
-              <div className="relative h-[70px] mb-2 mx-auto">
-                <div className="absolute left-1/2 -translate-x-1/2 w-1 h-full bg-[#060608] rounded-full border border-white/5" />
+
+              {/* Fader */}
+              <div className="relative h-[80px] mb-3 mx-auto">
                 <Slider
                   value={[track.volume * 100]}
                   onValueChange={(val) => onUpdateTrack(track.id, { volume: val[0] / 100 })}
@@ -221,17 +180,9 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
                   className="h-full"
                 />
               </div>
-              
-              {/* Volume value */}
-              <div className="text-center mb-2">
-                <span className="text-[9px] font-mono bg-black/40 px-1.5 py-0.5 rounded text-white">
-                  {Math.round(track.volume * 100)}
-                </span>
-              </div>
 
               {/* Pan */}
-              <div className="mb-2">
-                <div className="text-[7px] text-[#5C5C6E] text-center mb-1 font-bold tracking-wider">PAN</div>
+              <div className="mb-3">
                 <Slider
                   value={[track.pan * 100]}
                   onValueChange={(val) => onUpdateTrack(track.id, { pan: val[0] / 100 })}
@@ -240,23 +191,23 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
                   step={1}
                   className="w-full"
                 />
-                <div className="text-[8px] text-center text-[#9898A6] mt-0.5 font-mono">
+                <div className="text-[10px] text-center text-white/40 mt-1">
                   {getPanLabel(track.pan)}
                 </div>
               </div>
 
               {/* M/S */}
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onUpdateTrack(track.id, { muted: !track.muted });
                   }}
                   className={cn(
-                    "flex-1 h-5 rounded text-[8px] font-bold transition-all",
+                    "flex-1 h-7 rounded text-xs font-semibold transition-all",
                     track.muted 
-                      ? "bg-[#FF4757] text-white shadow-[0_0_10px_rgba(255,71,87,0.5)]" 
-                      : "bg-[#1F1F28] text-[#5C5C6E] hover:bg-[#2A2A36]"
+                      ? "bg-red-500/20 text-red-400" 
+                      : "bg-white/5 text-white/40 hover:text-white/70"
                   )}
                 >
                   M
@@ -267,59 +218,39 @@ export default function TrackMixer({ tracks, onUpdateTrack, onSelectTrack, selec
                     onUpdateTrack(track.id, { solo: !track.solo });
                   }}
                   className={cn(
-                    "flex-1 h-5 rounded text-[8px] font-bold transition-all",
+                    "flex-1 h-7 rounded text-xs font-semibold transition-all",
                     track.solo 
-                      ? "bg-[#FF9500] text-black shadow-[0_0_10px_rgba(255,149,0,0.5)]" 
-                      : "bg-[#1F1F28] text-[#5C5C6E] hover:bg-[#2A2A36]"
+                      ? "bg-yellow-500/20 text-yellow-400" 
+                      : "bg-white/5 text-white/40 hover:text-white/70"
                   )}
                 >
                   S
                 </button>
               </div>
-
-              {/* Record */}
-              <button className="mt-1 h-4 rounded flex items-center justify-center bg-[#1F1F28] hover:bg-[#FF4757]/20 transition-all">
-                <div className="w-2 h-2 rounded-full border-2 border-[#5C5C6E]" />
-              </button>
             </div>
           );
         })}
 
         {/* Master */}
         <div 
-          className="flex flex-col w-[68px] rounded-xl p-2 border border-[#00F0FF]/20"
-          style={{ background: 'linear-gradient(180deg, #00F0FF08 0%, #9D5CFF05 100%)' }}
+          className="flex flex-col w-[72px] rounded-lg p-3 border"
+          style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
         >
-          <div className="text-center mb-2">
-            <div className="text-[9px] font-bold text-[#00F0FF] uppercase tracking-wider">Master</div>
+          <div className="text-center mb-3">
+            <div className="text-xs font-medium text-white/70">Master</div>
           </div>
 
           {/* Master Meter */}
-          <div className="relative h-[130px] mb-2 mx-auto w-5">
-            <div className="absolute inset-0 bg-[#060608] rounded-md border border-[#00F0FF]/20 overflow-hidden">
-              {[0, 25, 50, 75].map((pct) => (
-                <div 
-                  key={pct}
-                  className="absolute left-0 right-0 h-px bg-[#00F0FF]/20"
-                  style={{ bottom: `${pct}%` }}
-                />
-              ))}
-              
+          <div className="relative h-[120px] mb-3 mx-auto w-6">
+            <div className="absolute inset-0 rounded-md overflow-hidden" style={{ background: 'rgba(0,0,0,0.3)' }}>
               <div
                 className="absolute bottom-0 left-0 right-0 transition-all duration-100"
                 style={{
                   height: `${Math.max(...Object.values(meterLevels)) * 0.85}%`,
-                  background: 'linear-gradient(0deg, #00F0FF 0%, #9D5CFF 100%)',
-                  boxShadow: '0 0 16px rgba(0, 240, 255, 0.4)'
+                  background: '#7C3AED'
                 }}
               />
             </div>
-          </div>
-
-          <div className="text-center mt-auto">
-            <span className="text-[9px] font-mono bg-black/40 px-1.5 py-0.5 rounded text-[#00F0FF]">
-              {formatDb(Math.max(...Object.values(meterLevels)) * 0.85)}
-            </span>
           </div>
         </div>
       </div>
